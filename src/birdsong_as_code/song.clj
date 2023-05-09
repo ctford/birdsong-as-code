@@ -17,30 +17,14 @@
       (* (env-gen (adsr 0.01 0.8 0.1) (line:kr 1 0 dur) :action FREE))
       (* 1/4 volume)))
 
-; Arrangement
 (defmethod live/play-note :bass [{hertz :pitch}] (bass hertz))
-(defmethod live/play-note :accompaniment [{hertz :pitch seconds :duration}] (organ hertz seconds))
+(defmethod live/play-note :default [{hertz :pitch seconds :duration}] (organ hertz seconds))
 
-; Composition
-(def progression [0 0 3 0 4 0])
-
-(defn bassline [root]
-  (->> (phrase (cycle [1 1/2 1/2 1 1]) [0 -3 -1 0 2 0 2 3 2 0])
-       (where :pitch (scale/from root))
-       (where :pitch (comp scale/lower scale/lower))
-       (all :part :bass)))
-
-(defn accompaniment [root]
-  (->>
-    (phrase [8] [(-> chord/seventh (chord/root root))])
-    (all :part :accompaniment)))
-
-; Track
-(def track
-  (->>
-    (mapthen bassline progression)
-    (with (mapthen accompaniment progression))
-    (where :pitch (comp temperament/equal scale/A scale/minor))
+(def harmonic-series
+  (->> 
+    (range 8 17)
+    (map (partial * 100))
+    (phrase (repeat 1/4))
     (tempo (bpm 90))))
 
 (defn -main []
@@ -48,5 +32,6 @@
 
 (comment
   ; Loop the track, allowing live editing.
-  (live/jam (var track))
+  (live/play harmonic-series)
+  (live/stop) 
 )
