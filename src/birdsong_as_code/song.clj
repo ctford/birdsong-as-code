@@ -9,9 +9,9 @@
 
 ; Instruments
 (definst bass [freq 110 dur 1.0 volume 1.0]
-  (-> (saw freq)
+  (-> (square freq)
       (* 1/8)
-      (* (env-gen (adsr 0.5 0.3 0.8 0.05) (line:kr 1 0 dur) :action FREE))
+      (* (env-gen (adsr 0.8 0.3 0.8 0.05) (line:kr 1 0 dur) :action FREE))
       (* volume)))
 
 (definst organ [freq 440 dur 1 volume 1.0]
@@ -20,7 +20,7 @@
       (+ (* 1/6 (sin-osc (* 3 freq))))
       (+ (* 1/8 (sin-osc (* 4 freq))))
       (+ (* 1/18 (sin-osc (* 5 freq))))
-      (* (env-gen (adsr 0.3 0.2 0.8 0.05) (line:kr 1 0 dur) :action FREE))
+      (* (env-gen (adsr 0.3 0.2 0.1 0.05) (line:kr 1 0 dur) :action FREE))
       (* 1/4 volume)))
 
 (defmethod live/play-note :bass [{hertz :pitch seconds :duration}] (bass hertz seconds))
@@ -31,21 +31,22 @@
     [8 9 11 16 13 14 12 16 12 11 17 15 14]
     (phrase [1/4 1/4 1/7 1/5 1/4 1/2 1 1/4 1/4 1/16 1/4 1/6 1/2])))
 
+(defn absolute-harmonic-scale [root]
+  (fn [pitch] (* root pitch)))
+
 (def harmonic
-  (let [root 150]
+  (let [root 110]
     (->>
-    melody
-    (where :pitch (partial * root))
-    (with (->> (phrase [6] [root]) (all :part :bass)))
-    (tempo (bpm 130)))))
+      melody
+      (where :pitch (absolute-harmonic-scale root))
+      (tempo (bpm 130)))))
 
 (def diatonic
-  (let [root 150]
+  (let [root 110]
     (->>
-    melody
-    (where :pitch (comp temperament/equal scale/high scale/E scale/major))
-    (with (->> (phrase [6] [root]) (all :part :bass)))
-    (tempo (bpm 130)))))
+      melody
+      (where :pitch (comp temperament/equal scale/A scale/major))
+      (tempo (bpm 130)))))
 
 (comment
   ; Loop the track, allowing live editing.
