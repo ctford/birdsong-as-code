@@ -24,6 +24,10 @@
     [8 9 11 16 13 14 12 16 12 11 17 15 14 16]
     (phrase [1/4 1/4 1/7 1/5 1/4 1/2 1 1/4 1/4 1/16 1/4 1/6 1/2 1/7 1/3])))
 
+(def species-call
+  (->> [14 18 16]
+       (phrase [1/3 1/3 1])))
+
 (defn absolute-harmonic-scale [root]
   (fn [pitch] (* root pitch)))
 
@@ -35,7 +39,8 @@
 (def harmonic
   (let [root 110]
     (->>
-      melody
+      species-call
+      (then melody)
       (where :pitch (absolute-harmonic-scale root))
       (all :previous (* 16 root))
       join-up
@@ -44,7 +49,8 @@
 (def diatonic
   (let [root 110]
     (->>
-      melody
+      species-call
+      (then melody)
       (where :pitch (comp temperament/equal scale/A scale/major))
       (all :previous (* 16 root))
       join-up
