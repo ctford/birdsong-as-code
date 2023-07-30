@@ -27,10 +27,10 @@
 (defn absolute-harmonic-scale [root]
   (fn [pitch] (* root pitch)))
 
-(defn join-up [[a b & notes]]
-  (when b
-    (let [b' (assoc b :previous (:pitch a))]
-      (cons a (join-up (cons b' notes))))))
+(defn join-up [[prev curr & notes]]
+  (when curr
+    (let [curr' (assoc curr :previous (:pitch prev))]
+      (cons prev (join-up (cons curr' notes))))))
 
 (def harmonic
   (let [root 110]
