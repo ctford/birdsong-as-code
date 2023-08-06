@@ -65,3 +65,74 @@
   (live/play diatonic)
   (live/stop)
 )
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Birdsong is music  ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Play some birdsong
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Frequency is pitch ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(definst tone [frequency 440] (sin-osc frequency))
+
+(definst beep [frequency 440 volume 1.0]
+  (let [envelope (env-gen (perc 0.01 0.9) :action FREE)]
+          (* envelope volume (sin-osc frequency))))
+
+(comment
+  (tone 300)
+  (beep 300)
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Harmonics          ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Interval
+(comment
+  (do
+    (beep 300)
+    (beep 500)))
+
+; Tone with equally-loud harmonics
+(comment
+  (let [harmonics (range 1 6)
+        freqs (map #(* % 100) harmonics) ]
+    (map beep freqs)))
+
+; Tone with diminishing harmonics
+(comment
+  (let [harmonics (range 1 6)
+        freqs (fn [root] (map #(* % root) harmonics))
+        volumes (map #(/ 3 %) harmonics)]
+    (map beep (freqs 100) volumes)))
+
+; Major triad
+(comment
+  (let [harmonics (range 1 6)
+        freqs (fn [root] (map #(* % root) harmonics))
+        volumes (map #(/ 3 %) harmonics)
+        boop (fn [root] (map beep (freqs root) volumes))]
+    (map boop [300 400 500])))
+
+; Octave normalisation
+(defn normalise [x]
+  (if (< x 1) (normalise (* x 2))
+    (if (< 2 x) (normalise (/ x 2))
+      x)))
+
+; Generate by multiplying 5-limit intervals
+(comment
+  (let [leaps (for [x (range 1 5)]
+                (/ (inc x) x))]
+    (->>
+      (for [x leaps y leaps]
+        (* x y))
+        (map normalise)
+        set
+        sort)))
+
