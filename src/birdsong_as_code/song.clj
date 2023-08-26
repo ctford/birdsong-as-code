@@ -80,7 +80,7 @@
 (definst tone [frequency 440] (sin-osc frequency))
 
 (definst beep [frequency 440 volume 1.0]
-  (let [envelope (env-gen (perc 0.01 0.9) :action FREE)]
+  (let [envelope (env-gen (perc 0.08 0.9) :action FREE)]
           (* envelope volume (sin-osc frequency))))
 
 (comment
@@ -101,7 +101,7 @@
 ; Tone with equally-loud harmonics
 (comment
   (let [harmonics (range 1 6)
-        freqs (map #(* % 100) harmonics) ]
+        freqs (map #(* % 500) harmonics) ]
     (map beep freqs)))
 
 ; Tone with diminishing harmonics
@@ -109,7 +109,7 @@
   (let [harmonics (range 1 6)
         freqs (fn [root] (map #(* % root) harmonics))
         volumes (map #(/ 3 %) harmonics)]
-    (map beep (freqs 100) volumes)))
+    (map beep (freqs 500) volumes)))
 
 ; Major triad
 (comment
@@ -136,3 +136,27 @@
         set
         sort)))
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Octave equivalence ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def low-melody
+  (->> (phrase [3/3 3/3 2/3 1/3 3/3]
+          [0 0 0 1 2])
+      (where :pitch (comp temperament/equal scale/A scale/major))
+      (tempo (bpm 90))
+      ))
+
+(def high-melody
+  (->> (phrase [3/3 3/3 2/3 1/3 3/3]
+          [7 7 7 8 9])
+      (where :pitch (comp temperament/equal scale/A scale/major))
+      (tempo (bpm 90))
+      ))
+
+(comment
+ (live/play low-melody)
+ (live/play high-melody)
+ (live/play (->> low-melody (with high-melody)))
+  )
