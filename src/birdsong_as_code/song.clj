@@ -58,7 +58,7 @@
 
 (comment
   ; Loop the track, allowing live editing.
-  (live/play harmonic-series)
+  (live/play harmonic)
   (live/jam (var harmonic))
   (live/play harmonic)
   (live/jam (var diatonic))
