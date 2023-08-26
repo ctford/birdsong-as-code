@@ -19,54 +19,6 @@
 (defmethod live/play-note :default [{hertz :pitch seconds :duration previous :previous}]
   (organ hertz seconds (or previous hertz)))
 
-(def melody
-  (->>
-    [8 9 11 16 13 14 12 16 12 11 17 15 14 16]
-    (phrase [1/4 1/4 1/7 1/5 1/4 1/2 1 1/4 1/4 1/16 1/4 1/6 1/2 1/7 1/3])))
-
-(def species-call
-  (->> [14 18 16]
-       (phrase [1/3 1/3 1])))
-
-(defn absolute-harmonic-scale [root]
-  (fn [pitch] (* root pitch)))
-
-(defn join-up [[prev curr & notes]]
-  (when curr
-    (let [curr' (assoc curr :previous (:pitch prev))]
-      (cons prev (join-up (cons curr' notes))))))
-
-(def harmonic
-  (let [root 110]
-    (->>
-      species-call
-      (then melody)
-      (where :pitch (absolute-harmonic-scale root))
-      (all :previous (* 16 root))
-      join-up
-      (tempo (bpm 130)))))
-
-(def diatonic
-  (let [root 110]
-    (->>
-      species-call
-      (then melody)
-      (where :pitch (comp temperament/equal scale/A scale/major))
-      (all :previous (* 16 root))
-      join-up
-      (tempo (bpm 130)))))
-
-(comment
-  ; Loop the track, allowing live editing.
-  (live/play harmonic)
-  (live/jam (var harmonic))
-  (live/play harmonic)
-  (live/jam (var diatonic))
-  (live/play diatonic)
-  (live/stop)
-)
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Birdsong is music  ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -141,22 +93,108 @@
 ;;; Octave equivalence ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def low-melody
+(def row-row
   (->> (phrase [3/3 3/3 2/3 1/3 3/3]
-          [0 0 0 1 2])
-      (where :pitch (comp temperament/equal scale/A scale/major))
-      (tempo (bpm 90))
-      ))
+               [0 0 0 1 2])
+       (tempo (bpm 120))
+       (where :pitch (comp temperament/equal scale/A scale/major))))
 
-(def high-melody
-  (->> (phrase [3/3 3/3 2/3 1/3 3/3]
-          [7 7 7 8 9])
-      (where :pitch (comp temperament/equal scale/A scale/major))
-      (tempo (bpm 90))
-      ))
+(def high-row-row
+  (->> low-melody
+       (where :pitch (partial * 2))))
+
+(def low-row-row
+  (->> row-row
+       (where :pitch (partial * 1/2))))
 
 (comment
- (live/play low-melody)
- (live/play high-melody)
- (live/play (->> low-melody (with high-melody)))
+ (live/play row-row)
+ (live/play high-row-row)
+ (live/play low-row-row)
+ (live/play (->> row-row (with high-row-row) (with low-row-row)))
   )
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Absolute scale     ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def melody
+  (->>
+    [8 9 11 16 13 14 12 16 12 11 17 15 14 16]
+    (phrase [1/4 1/4 1/7 1/5 1/4 1/2 1 1/4 1/4 1/16 1/4 1/6 1/2 1/7 1/3])))
+
+(def species-call
+  (->> [14 18 16]
+       (phrase [1/3 1/3 1])))
+
+(defn absolute-harmonic-scale [root]
+  (fn [pitch] (* root pitch)))
+
+(defn join-up [[prev curr & notes]]
+  (when curr
+    (let [curr' (assoc curr :previous (:pitch prev))]
+      (cons prev (join-up (cons curr' notes))))))
+
+(def harmonic
+  (let [root 110]
+    (->>
+      species-call
+      (then melody)
+      (where :pitch (absolute-harmonic-scale root))
+      (all :previous (* 16 root))
+      join-up
+      (tempo (bpm 130)))))
+
+(def diatonic
+  (let [root 110]
+    (->>
+      species-call
+      (then melody)
+      (where :pitch (comp temperament/equal scale/A scale/major))
+      (all :previous (* 16 root))
+      join-up
+      (tempo (bpm 130)))))
+
+(comment
+  ; Loop the track, allowing live editing.
+  (live/play harmonic)
+  (live/jam (var harmonic))
+  (live/play harmonic)
+  (live/jam (var diatonic))
+  (live/play diatonic)
+  (live/stop)
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Not in tune        ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(comment
+  (->> harmonic
+       (with (->> harmonic
+                  (where :pitch (partial * 1.22))
+                  (tempo (partial * 1.03))
+                  (after 0.6)
+                  ))
+       (with (->> harmonic
+                  (where :pitch (partial * 0.94))
+                  (tempo (partial * 0.86))
+                  (after 1.6)
+                  ))
+       (live/play)
+       ))
+
+(comment
+  (->> diatonic
+       (with (->> diatonic
+                  (where :pitch (partial * 1.22))
+                  (tempo (partial * 1.03))
+                  (after 0.6)
+                  ))
+       (with (->> diatonic
+                  (where :pitch (partial * 0.94))
+                  (tempo (partial * 0.86))
+                  (after 1.6)
+                  ))
+       (live/play)
+       ))
