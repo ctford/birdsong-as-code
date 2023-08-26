@@ -20,87 +20,160 @@
   (organ hertz seconds (or previous hertz)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Zoömusicology      ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(comment
+  "The study of music in animal culture."
+)
+
+(comment
+  "Is Birdsong Music?"
+  "Hollis Taylor"
+
+  "Pied Butcherbird, cracticus nigrogularis"
+)
+
+(comment
+  "Overtone-based pitch selection in hermit thrush song"
+  "Doolittle, Gingras, Endres and Fitch"
+
+  "Hermit Thrush, catharus guttatus"
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Birdsong is music  ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Play some birdsong
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Frequency is pitch ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(definst tone [frequency 440] (sin-osc frequency))
-
-(definst beep [frequency 440 volume 1.0]
-  (let [envelope (env-gen (perc 0.08 0.9) :action FREE)]
-          (* envelope volume (sin-osc frequency))))
+(definst tone [frequency 440]
+  (sin-osc frequency))
 
 (comment
   (tone 300)
+)
+
+
+(definst beep [frequency 440 volume 1.0]
+  (let [envelope (env-gen (perc 0.01 0.9) :action FREE)]
+    (* envelope volume (sin-osc frequency))))
+
+(comment
   (beep 300)
 )
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Harmonics          ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-; Interval
 (comment
   (do
     (beep 300)
-    (beep 500)))
+    (beep 500))
+)
 
-; Tone with equally-loud harmonics
-(comment
+
+(defn bell [root]
   (let [harmonics (range 1 6)
-        freqs (map #(* % 500) harmonics) ]
-    (map beep freqs)))
+        freqs (map #(* % root) harmonics)
+        volumes (map #(/ 1 %) harmonics)]
+    (doall (map beep freqs volumes))))
 
-; Tone with diminishing harmonics
 (comment
-  (let [harmonics (range 1 6)
-        freqs (fn [root] (map #(* % root) harmonics))
-        volumes (map #(/ 3 %) harmonics)]
-    (map beep (freqs 500) volumes)))
+  (do
+    (bell 300)
+    (bell 500))
+)
 
-; Major triad
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Scales             ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def just-ratios
+  [1/1 9/8 5/4 4/3 3/2 5/3 15/8 2/1])
+
+(defn relative-to [root ratios]
+  (map #(* root %) ratios))
+
 (comment
-  (let [harmonics (range 1 6)
-        freqs (fn [root] (map #(* % root) harmonics))
-        volumes (map #(/ 3 %) harmonics)
-        boop (fn [root] (map beep (freqs root) volumes))]
-    (map boop [300 400 500])))
+  (->> just-ratios (relative-to 300))
+)
 
-; Octave normalisation
-(defn normalise [x]
-  (if (< x 1) (normalise (* x 2))
-    (if (< 2 x) (normalise (/ x 2))
-      x)))
 
-; Generate by multiplying 5-limit intervals
 (comment
-  (let [leaps (for [x (range 1 5)]
-                (/ (inc x) x))]
-    (->>
-      (for [x leaps y leaps]
-        (* x y))
-        (map normalise)
-        set
-        sort)))
-
+  (->> (phrase
+         (repeat 1)
+         (->> just-ratios (relative-to 300)))
+       live/play)
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Octave equivalence ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defn octave-normalise [n ratios]
+  (if (neg? n)
+    (-> n (+ 7) (octave-normalise ratios) (/ 2))
+    (if (< 7 n)
+      (-> n (- 7) (octave-normalise ratios) (* 2))
+      (nth ratios n))))
+
+(comment
+  (octave-normalise 0 just-ratios)
+  (octave-normalise 7 just-ratios)
+  (octave-normalise 4 just-ratios)
+  (octave-normalise -3 just-ratios)
+)
+
+(defn a-major [n]
+  (->> just-ratios
+       (relative-to 440)
+       (octave-normalise n)))
+
+(comment
+  (->> (phrase
+         (repeat 1/2)
+         (range -7 8 1))
+       (where :pitch a-major)
+       live/play)
+
+  (->> (phrase
+         [1 1 2]
+         [[1 4 6] [3 5 7] [2 4 7]])
+       (where :pitch a-major)
+       live/play)
+)
+
 (def row-row
-  (->> (phrase [3/3 3/3 2/3 1/3 3/3]
+  (->> (phrase [3/6 3/6 2/6 1/6 3/6]
                [0 0 0 1 2])
-       (tempo (bpm 120))
-       (where :pitch (comp temperament/equal scale/A scale/major))))
+       (where :pitch a-major)))
 
 (def high-row-row
-  (->> low-melody
+  (->> row-row
        (where :pitch (partial * 2))))
 
 (def low-row-row
@@ -108,11 +181,11 @@
        (where :pitch (partial * 1/2))))
 
 (comment
- (live/play row-row)
- (live/play high-row-row)
- (live/play low-row-row)
- (live/play (->> row-row (with high-row-row) (with low-row-row)))
-  )
+  (live/play row-row)
+  (live/play high-row-row)
+  (live/play low-row-row)
+  (live/play (->> row-row (with high-row-row) (with low-row-row)))
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Absolute scale     ;;;
