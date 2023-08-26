@@ -156,7 +156,7 @@
 (comment
   (->> (phrase
          (repeat 1/2)
-         (range -7 8 1))
+         (range -7 8))
        (where :pitch a-major)
        live/play)
 
@@ -191,6 +191,33 @@
 ;;; Absolute scale     ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defn relative-to [root ratios]
+  (map #(* root %) ratios))
+
+(defn a-harmonic [n]
+  (-> n (+ 8) (* 440) (/ 8)))
+
+(comment
+  (a-harmonic 0)
+  (a-harmonic 2)
+  (map a-harmonic (range -4 9))
+)
+
+(comment
+  (->> (phrase
+         (repeat 1/2)
+         (range -4 9))
+       (where :pitch a-harmonic)
+       live/play)
+)
+
+(defn absolute-harmonic-scale [root]
+  (fn [pitch] (* root pitch)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Using it           ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (def melody
   (->>
     [8 9 11 16 13 14 12 16 12 11 17 15 14 16]
@@ -199,9 +226,6 @@
 (def species-call
   (->> [14 18 16]
        (phrase [1/3 1/3 1])))
-
-(defn absolute-harmonic-scale [root]
-  (fn [pitch] (* root pitch)))
 
 (defn join-up [[prev curr & notes]]
   (when curr
