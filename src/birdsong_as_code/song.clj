@@ -198,3 +198,26 @@
                   ))
        (live/play)
        ))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Species call       ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def species-call
+  (->> [14 18 16]
+       (phrase [1/3 1/3 1])))
+
+
+(def species-call'
+  (let [root 110]
+    (->>
+      species-call
+      (where :pitch (absolute-harmonic-scale root))
+      (all :previous (* 16 root))
+      (tempo (bpm 130)))))
+
+(comment
+
+  (live/play species-call')
+
+  )
