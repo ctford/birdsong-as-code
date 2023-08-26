@@ -191,9 +191,6 @@
 ;;; Absolute scale     ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn relative-to [root ratios]
-  (map #(* root %) ratios))
-
 (defn a-harmonic [n]
   (-> n (+ 8) (* 440) (/ 8)))
 
@@ -211,8 +208,28 @@
        live/play)
 )
 
-(defn absolute-harmonic-scale [root]
-  (fn [pitch] (* root pitch)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Species motif      ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def species-motif
+  (phrase [1/2 1/2 1] [15 17 16]))
+
+(comment
+  (->> species-motif
+       (where :pitch a-harmonic)
+       live/play)
+)
+
+
+
+
+
+
+
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Using it           ;;;
@@ -223,14 +240,13 @@
     [8 9 11 16 13 14 12 16 12 11 17 15 14 16]
     (phrase [1/4 1/4 1/7 1/5 1/4 1/2 1 1/4 1/4 1/16 1/4 1/6 1/2 1/7 1/3])))
 
-(def species-call
-  (->> [14 18 16]
-       (phrase [1/3 1/3 1])))
-
 (defn join-up [[prev curr & notes]]
   (when curr
     (let [curr' (assoc curr :previous (:pitch prev))]
       (cons prev (join-up (cons curr' notes))))))
+
+(defn absolute-harmonic-scale [root]
+  (fn [pitch] (* root pitch)))
 
 (def harmonic
   (let [root 110]
@@ -247,7 +263,7 @@
     (->>
       species-call
       (then melody)
-      (where :pitch (comp temperament/equal scale/A scale/major))
+      (where :pitch a-major)
       (all :previous (* 16 root))
       join-up
       (tempo (bpm 130)))))
