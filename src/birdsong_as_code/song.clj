@@ -19,6 +19,11 @@
 (defmethod live/play-note :default [{hertz :pitch seconds :duration previous :previous}]
   (organ hertz seconds (or previous hertz)))
 
+(definst butcherbird []
+  (let [buffer (load-sample "recordings/AUDIO 24.wav")]
+    (play-buf 1 buffer :action FREE)))
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Zoömusicology      ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -45,9 +50,9 @@
 ;;; Birdsong is music  ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Play some birdsong
-
-
+(comment
+  (butcherbird)
+)
 
 
 
