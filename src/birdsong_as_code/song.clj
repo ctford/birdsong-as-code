@@ -17,7 +17,7 @@
         (* 1/4 volume))))
 
 (defmethod live/play-note :default [{hertz :pitch seconds :duration previous :previous}]
-  (organ hertz seconds (or previous hertz)))
+  (when hertz (organ hertz seconds (or previous hertz))))
 
 (definst butcherbird []
   (let [buffer (load-sample "recordings/AUDIO 24.wav")]
@@ -192,6 +192,11 @@
   (live/play (->> row-row (with high-row-row) (with low-row-row)))
 )
 
+(defn C-major [n]
+  (->> just-ratios
+       (relative-to 523.25)
+       (octave-normalise n)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Absolute scale     ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -235,6 +240,33 @@
 
 
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Audio 24           ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; TODO accidentals
+(def hollis-transcription
+  (let [a (phrase
+            [1/4 1/4 1/4 1/4 1/4 1]
+            [3 3.5 4 5 nil 6.5])
+        b (phrase
+            [1/4 1/2 1/2 1/2 1/2]
+            [3 3 3 2 2])
+        a' (phrase
+             [1/2 1/2 1]
+             [10 10 9])
+        b' (phrase
+             [3/16 3/16 3/16 3/8 3/16 3/16 3/16]
+             [3 5 5 5 4 4 6.5])]
+    (->> a (then b) (then a') (then b'))))
+
+(comment
+  (->> hollis-transcription
+       (where :pitch A-major)
+       ;(where :pitch (comp temperament/equal scale/A scale/major))
+       live/play)
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Using it           ;;;
