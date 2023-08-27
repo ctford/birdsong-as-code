@@ -153,7 +153,7 @@
   (octave-normalise -3 just-ratios)
 )
 
-(defn a-major [n]
+(defn A-major [n]
   (->> just-ratios
        (relative-to 440)
        (octave-normalise n)))
@@ -162,20 +162,20 @@
   (->> (phrase
          (repeat 1/2)
          (range -7 8))
-       (where :pitch a-major)
+       (where :pitch A-major)
        live/play)
 
   (->> (phrase
          [1 1 2]
          [[1 4 6] [3 5 7] [2 4 7]])
-       (where :pitch a-major)
+       (where :pitch A-major)
        live/play)
 )
 
 (def row-row
   (->> (phrase [3/6 3/6 2/6 1/6 3/6]
                [0 0 0 1 2])
-       (where :pitch a-major)))
+       (where :pitch A-major)))
 
 (def high-row-row
   (->> row-row
@@ -196,20 +196,20 @@
 ;;; Absolute scale     ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn a-harmonic [n]
+(defn A-harmonic [n]
   (-> n (+ 8) (* 440) (/ 8)))
 
 (comment
-  (a-harmonic 0)
-  (a-harmonic 2)
-  (map a-harmonic (range -4 9))
+  (A-harmonic 0)
+  (A-harmonic 2)
+  (map A-harmonic (range -4 9))
 )
 
 (comment
   (->> (phrase
          (repeat 1/2)
          (range -4 9))
-       (where :pitch a-harmonic)
+       (where :pitch A-harmonic)
        live/play)
 )
 
@@ -223,7 +223,7 @@
 
 (comment
   (->> species-motif
-       (where :pitch a-harmonic)
+       (where :pitch A-harmonic)
        live/play)
 )
 
@@ -266,7 +266,7 @@
   (let [root 110]
     (->>
       melody
-      (where :pitch a-major)
+      (where :pitch A-major)
       (all :previous (* 16 root))
       join-up
       (tempo (bpm 130)))))
