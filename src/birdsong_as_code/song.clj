@@ -19,6 +19,10 @@
 (defmethod live/play-note :default [{hertz :pitch seconds :duration previous :previous}]
   (when hertz (organ hertz seconds (or previous hertz))))
 
+(definst butcherbird-19 []
+  (let [buffer (load-sample "recordings/AUDIO 19.wav")]
+    (play-buf 1 buffer :action FREE)))
+
 (definst butcherbird-23 []
   (let [buffer (load-sample "recordings/AUDIO 23.wav")]
     (play-buf 1 buffer :action FREE)))
@@ -54,10 +58,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (comment
+  (butcherbird-19)
   (butcherbird-23)
   (butcherbird-24)
 )
-
 
 
 
