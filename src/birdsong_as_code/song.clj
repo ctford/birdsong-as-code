@@ -268,6 +268,32 @@
        live/play)
 )
 
+(def my-transcription
+  (let [a (->> (phrase
+                 [1 1/2 1/2 3/2 1]
+                 [4 4 4 6 6])
+               (where :pitch A-major))
+        b (->> (phrase
+                 [1/2 1/2 1]
+                 [2 2 1]
+                 )
+               (where :pitch A-major))
+        a' (->> (phrase
+                  [1/2 1/2 1]
+                  [10 10 9])
+                (where :pitch A-major))
+        b' (->> (phrase
+                 [1 1/2 1/2 3/2]
+                 [4 4 4 6])
+               (where :pitch A-major))
+        ]
+    (->> a (then b) (then a') (then b'))))
+
+(comment
+  (->> my-transcription
+       live/play)
+)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Using it           ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
