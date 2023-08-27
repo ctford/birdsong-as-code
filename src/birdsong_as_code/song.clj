@@ -16,6 +16,13 @@
         (* (env-gen (adsr 0.3 0.2 0.1 0.05) (line:kr 1 0 dur) :action FREE))
         (* 1/4 volume))))
 
+(comment
+  (on-event [:midi :note-on]
+            (fn [message]
+              (-> message :note ((temperament/just 72)) organ))
+            ::midi-note-on-handler)
+)
+
 (defmethod live/play-note :default [{hertz :pitch seconds :duration previous :previous}]
   (when hertz (organ hertz seconds (or previous hertz))))
 
