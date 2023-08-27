@@ -256,8 +256,7 @@
 (def harmonic
   (let [root 110]
     (->>
-      species-call
-      (then melody)
+      melody
       (where :pitch (absolute-harmonic-scale root))
       (all :previous (* 16 root))
       join-up
@@ -266,8 +265,7 @@
 (def diatonic
   (let [root 110]
     (->>
-      species-call
-      (then melody)
+      melody
       (where :pitch a-major)
       (all :previous (* 16 root))
       join-up
