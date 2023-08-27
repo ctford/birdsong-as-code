@@ -208,8 +208,10 @@
 ;;; Absolute scale     ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn A-harmonic [n]
-  (-> n (+ 8) (* 440) (/ 8)))
+(defn harmonic [root]
+  (fn [n] (-> n (+ 8) (* root) (/ 8))))
+
+(def A-harmonic (harmonic 440))
 
 (comment
   (A-harmonic 0)
@@ -217,14 +219,15 @@
   (map A-harmonic (range -4 9))
 )
 
+(def C-harmonic (harmonic 523.25))
+
 (comment
   (->> (phrase
          (repeat 1/2)
          (range -4 9))
-       (where :pitch A-harmonic)
+       (where :pitch C-harmonic)
        live/play)
 )
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Species motif      ;;;
@@ -278,26 +281,46 @@
 (def my-transcription
   (let [a (->> (phrase
                  [1 1/2 1/2 3/2 1]
-                 [4 4 4 6 6])
-               (where :pitch A-major))
+                 [4 4 4 6 6]))
         b (->> (phrase
                  [1/2 1/2 1]
                  [2 2 1]
-                 )
-               (where :pitch A-major))
+                 ))
         a' (->> (phrase
                   [1/2 1/2 1]
-                  [10 10 9])
-                (where :pitch A-major))
+                  [10 10 9]))
         b' (->> (phrase
                  [1 1/2 1/2 3/2]
-                 [4 4 4 6])
-               (where :pitch A-major))
-        ]
+                 [4 4 4 6])) ]
     (->> a (then b) (then a') (then b'))))
 
 (comment
   (->> my-transcription
+       (where :pitch (harmonic 440))
+       ;(map :pitch)
+       live/play)
+)
+
+
+(def my-other-transcription
+  (let [a (->> (phrase
+                 [1 1/2 1/2 3/2 1]
+                 [2 2 2 4 4]))
+        b (->> (phrase
+                 [1/2 1/2 1]
+                 [0.5 0.5 0]))
+        a' (->> (phrase
+                  [1/2 1/2 1]
+                  [9.5 9.5 8]))
+        b' (->> (phrase
+                 [1 1/2 1/2 3/2]
+                 [2 2 2 4])) ]
+    (->> a (then b) (then a') (then b'))))
+
+(comment
+  (->> my-other-transcription
+       (where :pitch (comp (partial * 2) C-harmonic))
+       ;(map :pitch)
        live/play)
 )
 
