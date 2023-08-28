@@ -16,12 +16,6 @@
         (* (env-gen (adsr 0.3 0.2 0.1 0.05) (line:kr 1 0 dur) :action FREE))
         (* 1/4 volume))))
 
-(comment
-  (on-event [:midi :note-on]
-            (fn [message]
-              (-> message :note ((temperament/just 72)) organ))
-            ::midi-note-on-handler)
-)
 
 (defmethod live/play-note :default [{hertz :pitch seconds :duration previous :previous}]
   (when hertz (organ hertz seconds (or previous hertz))))
@@ -432,3 +426,30 @@
   (live/play species-call')
 
   )
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Harmonic keytar    ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn midi->harmonic [midi]
+  (let [x nil]
+    (get
+      [ 1  x  x  x  x  x  x  x  x  x  x  x
+        2  x  x  x  x  x  x  3  x  x  x  x
+        4  x  x  x  5  x  x  6  x  x  7  x
+        8  x  9  x 10  x 11 12 13  x 14 15
+       16 17 18 19 20 21 22,24,26 27 28,30
+       32,34,36,38,40,42,44,48,52,54,56,60]
+      midi)))
+
+(defn midi->freq [midi]
+  (let [c2-midi 36
+        c2-freq 65.41]
+    (some-> midi (- c2-midi) midi->harmonic (* c2-freq))))
+
+(comment
+  (on-event [:midi :note-on]
+            (fn [message]
+              (some-> message :note midi->freq organ))
+            ::midi-note-on)
+)
