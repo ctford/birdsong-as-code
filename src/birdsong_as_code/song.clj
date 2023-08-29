@@ -21,7 +21,7 @@
   (out:kr out-bus (lf-noise1:kr freq)))
 (defonce random-walk (audio-bus))
 (defonce walk (walker random-walk))
-(def resonance (mul-add (in:kr random-walk) 1500 2000))
+(def resonance (mul-add (in:kr random-walk) 1500 10000))
 
 (defcgen cut-out [input {:default :none}]
   (:ar (let [_ (detect-silence input :action FREE)]
@@ -39,10 +39,8 @@
   (:ar (-> input
            (* volume)
            (pan2 pan)
-;           (free-verb :mix early :room 0.1)
            (free-verb :mix wet :room room)
            (lpf high)
-;           (hpf low)
            cut-out))
   (:default :ar))
 
@@ -72,6 +70,11 @@
 (definst butcherbird-24 []
   (let [buffer (load-sample "recordings/AUDIO 24.wav")]
     (play-buf 1 buffer :action FREE)))
+
+(def butcherbirds
+  {19 butcherbird-19
+   23 butcherbird-23
+   24 butcherbird-24})
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Zoömusicology      ;;;
@@ -494,3 +497,16 @@
               (some-> message :note midi->freq (corgan :dur 2)))
             ::midi-note-on)
 )
+
+(defmethod live/play-note :butcherbird [{n :bird seconds :duration}]
+  ((butcherbirds n)))
+
+(def birdloop
+  [{:time 0 :duration 8 :bird 23 :part :butcherbird}
+   {:time 8 :duration 8 :bird 24 :part :butcherbird}
+   {:time 16 :duration 8 :bird 19 :part :butcherbird}])
+
+(comment
+  (live/jam (var birdloop))
+  (live/play birdloop)
+  )
