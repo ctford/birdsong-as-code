@@ -16,6 +16,47 @@
         (* (env-gen (adsr 0.3 0.2 0.1 0.05) (line:kr 1 0 dur) :action FREE))
         (* 1/4 volume))))
 
+; Generic machinery
+(defsynth walker [out-bus 0 freq 0.5]
+  (out:kr out-bus (lf-noise1:kr freq)))
+(defonce random-walk (audio-bus))
+(defonce walk (walker random-walk))
+(def resonance (mul-add (in:kr random-walk) 1500 2000))
+
+(defcgen cut-out [input {:default :none}]
+  (:ar (let [_ (detect-silence input :action FREE)]
+         input))
+  (:default :ar))
+
+(defcgen effects [input  {:default :none}
+                  pan    {:default 0}
+                  wet    {:default 0.33}
+                  room   {:default 0.5}
+                  volume {:default 1.0}
+                  early  {:default 0.1}
+                  high   {:default 20000}
+                  low    {:default 0}]
+  (:ar (-> input
+           (* volume)
+           (pan2 pan)
+;           (free-verb :mix early :room 0.1)
+           (free-verb :mix wet :room room)
+           (lpf high)
+;           (hpf low)
+           cut-out))
+  (:default :ar))
+
+
+(definst corgan [freq 440 dur 1.0 depth 1 walk 1 attack 0.01 under-attack 0.3 vol 1.0 pan 0.0 wet 0.5 room 0.5 vibrato 3 limit 99999]
+  (->
+    (saw freq)
+    (* 99)
+    (rlpf (mul-add (sin-osc vibrato) (line:kr 0 (* depth resonance) 10) (* freq 4)) 1/20)
+    (clip2 0.4)
+    (* (env-gen (adsr attack 1.0 0.5) (line:kr 1.0 0.0 dur)))
+    (+ (* 1/4 (sin-osc (* 1.002 freq)) (env-gen (perc under-attack dur))))
+    (rlpf (* walk resonance) 1/5)
+    (effects :pan pan :wet wet :room room :volume vol :high limit)))
 
 (defmethod live/play-note :default [{hertz :pitch seconds :duration previous :previous}]
   (when hertz (organ hertz seconds (or previous hertz))))
@@ -450,6 +491,6 @@
 (comment
   (on-event [:midi :note-on]
             (fn [message]
-              (some-> message :note midi->freq organ))
+              (some-> message :note midi->freq (corgan :dur 2)))
             ::midi-note-on)
 )
