@@ -48,12 +48,13 @@
 (definst corgan [freq 440 dur 1.0 depth 1 walk 1 attack 0.01 under-attack 0.3 vol 1.0 pan 0.0 wet 0.5 room 0.5 vibrato 3 limit 99999]
   (->
     (saw freq)
-    (rlpf (mul-add (sin-osc vibrato) (line:kr 0 (* depth resonance) 100) (* freq 4)) 1/20)
-    (clip2 0.5)
+    (* (env-gen (perc 0.01 dur)))
+    (rlpf (mul-add (sin-osc vibrato) (line:kr 0 (* 0.5 resonance) 10) (* freq 4)) 0.3)
+    (* vol 2)
+    (clip2 0.4)
     (* (env-gen (adsr attack 0.5 2) (line:kr 1.0 0.0 dur)))
     (+ (* 1/4 (sin-osc freq) (env-gen (perc under-attack dur))))
-    (rlpf (* walk resonance) 0.2)
-    (* vol)
+    (rlpf (* walk resonance) 0.6)
     (effects :pan pan :wet wet :room room :volume vol :high limit)))
 
 (defmethod live/play-note :default [{hertz :pitch seconds :duration previous :previous}]
