@@ -21,7 +21,7 @@
   (out:kr out-bus (lf-noise1:kr freq)))
 (defonce random-walk (audio-bus))
 (defonce walk (walker random-walk))
-(def resonance (mul-add (in:kr random-walk) 500 9000))
+(def resonance (mul-add (in:kr random-walk) 1000 5000))
 
 (defcgen cut-out [input {:default :none}]
   (:ar (let [_ (detect-silence input :action FREE)]
@@ -45,16 +45,31 @@
   (:default :ar))
 
 
-(definst corgan [freq 440 dur 1.0 depth 1 walk 1 attack 0.01 under-attack 0.3 vol 1.0 pan 0.0 wet 0.5 room 0.5 vibrato 3 limit 99999]
+(definst corgan [freq 440 dur 10.0 depth 1 walk 1 attack 0.01 under-attack 0.3 vol 1.0 pan 0.0 wet 0.5 room 0.5 vibrato 3 limit 99999 gate 1.0]
   (->
     (saw freq)
     (* (env-gen (perc 0.01 dur)))
-    (rlpf (mul-add (sin-osc vibrato) (line:kr 0 (* 0.5 resonance) 10) (* freq 4)) 0.3)
-    (* vol 2)
+    (rlpf (mul-add (sin-osc vibrato) (line:kr 0 200 dur) (* freq 4)) 0.3)
+    (* vol 4)
+    (clip2 0.2)
+    (+ (* 1/3 (sin-osc freq) (env-gen (perc under-attack dur))))
+    (+ (* (lpf (* 1 (brown-noise)) 500) (env-gen (perc 0.01 0.2))))
+    (* (env-gen (adsr attack 0.05 1) (* gate (line:kr 1.0 0.0 dur))))
+    (rlpf (* walk resonance) 0.1)
+    (* vol 3)
+    (effects :pan pan :wet wet :room room :volume vol :high limit)))
+
+(definst blorp [freq 440 dur 1.0 depth 1 walk 1 attack 0.01 under-attack 0.3 vol 1.0 pan 0.0 wet 0.5 room 0.5 vibrato 3 limit 99999 gate 1.0]
+  (->
+    (square freq)
+    (+ (* 3 (sin-osc freq) (env-gen (perc under-attack dur))))
+    (* (env-gen (perc 0.001 0.4)))
+    (lpf (line:kr (* freq 9) (* freq 1) dur))
+    (* vol 9)
     (clip2 0.4)
-    (* (env-gen (adsr attack 0.5 2) (line:kr 1.0 0.0 dur)))
-    (+ (* 1/4 (sin-osc freq) (env-gen (perc under-attack dur))))
-    (rlpf (* walk resonance) 0.6)
+    (* 3)
+    (rlpf (* walk resonance) 0.1)
+    (* vol 3/2)
     (effects :pan pan :wet wet :room room :volume vol :high limit)))
 
 (defmethod live/play-note :default [{hertz :pitch seconds :duration previous :previous}]
@@ -62,15 +77,15 @@
 
 (definst butcherbird-19 []
   (let [buffer (load-sample "recordings/AUDIO 19.wav")]
-    (play-buf 1 buffer :action FREE)))
+    (play-buf 1 buffer :action FREE :rate 1.0)))
 
 (definst butcherbird-23 []
   (let [buffer (load-sample "recordings/AUDIO 23.wav")]
-    (play-buf 1 buffer :action FREE)))
+    (play-buf 1 buffer :action FREE :rate 0.25)))
 
 (definst butcherbird-24 []
   (let [buffer (load-sample "recordings/AUDIO 24.wav")]
-    (play-buf 1 buffer :action FREE)))
+    (play-buf 1 buffer :action FREE :rate 0.5)))
 
 (def butcherbirds
   {19 butcherbird-19
@@ -488,17 +503,31 @@
       midi)))
 
 (defn midi->freq [midi]
-  (let [c2-midi 36
+  (let [c1-midi 24
+        c1-freq 37.71
+        c2-midi 36
         c2-freq 65.41]
-    (some-> midi (- c2-midi) midi->harmonic (* c2-freq))))
+    ;(some-> midi (- c2-midi) midi->harmonic (* c2-freq))
+    (some-> midi (- c1-midi) midi->harmonic (* c1-freq))
+    ))
 
-(comment
+(def keytar-instrument corgan #_blorp)
+
+(defonce notes-in-progress (atom {}))
+
+(def keytar-note-on
   (on-event [:midi :note-on]
             (fn [{note :note velocity :velocity}]
-              (let [unit-volume (/ velocity 128)]
-                (some-> note midi->freq (corgan :dur 2 :vol (/ velocity 128)))))
-            ::midi-note-on)
-)
+              (let [unit-volume (+ 1/4 (* 3/4 (/ velocity 128)))
+                    synth (some-> note midi->freq (/ 2) (keytar-instrument :dur 15 :vol (/ velocity 128)))]
+                (swap! notes-in-progress assoc note synth)))
+            ::midi-note-on))
+
+(def keytar-note-off
+  (on-event [:midi :note-off]
+           (fn [{note :note}]
+             (ctl (@notes-in-progress note) :gate 0))
+           ::midi-note-off))
 
 (defmethod live/play-note :butcherbird [{n :bird seconds :duration}]
   ((butcherbirds n)))
