@@ -7,14 +7,14 @@
             [leipzig.chord :as chord]
             [leipzig.temperament :as temperament]))
 
-(definst organ [freq 440 dur 1 volume 1.0 prev 220]
-  (let [freq (line:kr (or prev freq) freq 0.06)]
-    (-> (sin-osc freq)
-        (+ (* 1/2 (sin-osc (* 2 freq))))
-        (+ (* 1/6 (sin-osc (* 3 freq))))
-        (+ (* 1/8 (sin-osc (* 4 freq))))
-        (* (env-gen (adsr 0.3 0.2 0.1 0.05) (line:kr 1 0 dur) :action FREE))
-        (* 1/4 volume))))
+(definst organ [freq 440 dur 1 volume 1.0]
+  (-> (sin-osc freq)
+      (+ (* 1/2 (sin-osc (* 2 freq))))
+      (+ (* 1/7 (sin-osc (* 3 freq))))
+      (+ (* 1/11 (sin-osc (* 4 freq))))
+      (+ (* 1/20 (sin-osc (* 5 freq))))
+      (* (env-gen (perc 0.2 dur)))
+      (* 1/6 volume)))
 
 ; Generic machinery
 (defsynth walker [out-bus 0 freq 0.5]
@@ -72,8 +72,8 @@
     (* vol 3/2)
     (effects :pan pan :wet wet :room room :volume vol :high limit)))
 
-(defmethod live/play-note :default [{hertz :pitch seconds :duration previous :previous}]
-  (when hertz (organ hertz seconds (or previous hertz))))
+(defmethod live/play-note :default [{hertz :pitch seconds :duration}]
+  (when hertz (organ hertz seconds)))
 
 (definst butcherbird-19 []
   (let [buffer (load-sample "recordings/AUDIO 19.wav")]
@@ -438,7 +438,7 @@
   (cons n (lazy-seq (rand-pitch (+ n (rand-int 3) -1)))))
 
 (defn rand-duration []
-  (cons (rand-nth [1/8 1/4 1/2 1 2]) (lazy-seq (rand-duration))))
+  (cons (rand-nth [1/8 1/4 1/2 1 2 4]) (lazy-seq (rand-duration))))
 
 (defn rand-phrase []
   (let [start (rand-nth (range 8 16))]
@@ -448,10 +448,10 @@
 
 (comment
   (->> (rand-phrase)
-       (with (->> (rand-phrase) (where :pitch (partial * 1.13))))
-       (with (->> (rand-phrase) (where :pitch (partial * 0.93))))
-       ;(with (->> (rand-phrase)))
-       ;(with (->> (rand-phrase)))
+       (with (->> (rand-phrase) (where :pitch (partial * 1.13)) (after 1)))
+       (with (->> (rand-phrase) (where :pitch (partial * 0.93)) (after 2)))
+       ;(with (->> (rand-phrase) (after 1)))
+       ;(with (->> (rand-phrase) (after 2)))
        live/play))
 
 (comment
