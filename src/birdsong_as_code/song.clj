@@ -295,7 +295,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (def species-motif
-  (phrase [1/2 1/2 1] [15 17 16]))
+  (phrase [1/2 1/2 1] [15 18 16]))
 
 (comment
   (->> species-motif
@@ -357,7 +357,7 @@
 
 (comment
   (->> my-transcription
-       (where :pitch (harmonic 440))
+       (where :pitch A-harmonic)
        ;(map :pitch)
        live/play)
 )
@@ -434,35 +434,38 @@
 ;;; Not in tune        ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(comment
-  (->> harmonic
-       (with (->> harmonic
-                  (where :pitch (partial * 1.22))
-                  (tempo (partial * 1.03))
-                  (after 0.6)
-                  ))
-       (with (->> harmonic
-                  (where :pitch (partial * 0.94))
-                  (tempo (partial * 0.86))
-                  (after 1.6)
-                  ))
-       (live/play)
-       ))
+(defn rand-pitch [n]
+  (cons n (lazy-seq (rand-pitch (+ n (rand-int 3) -1)))))
+
+(defn rand-duration []
+  (cons (rand-nth [1/8 1/4 1/2 1 2]) (lazy-seq (rand-duration))))
+
+(defn rand-phrase []
+  (let [start (rand-nth (range 8 16))]
+    (->> (phrase (rand-duration) (rand-pitch start))
+       (where :pitch A-harmonic)
+       (take 12))))
 
 (comment
-  (->> diatonic
-       (with (->> diatonic
-                  (where :pitch (partial * 1.22))
-                  (tempo (partial * 1.03))
-                  (after 0.6)
-                  ))
-       (with (->> diatonic
-                  (where :pitch (partial * 0.94))
-                  (tempo (partial * 0.86))
-                  (after 1.6)
-                  ))
-       (live/play)
-       ))
+  (->> (rand-phrase)
+       (with (->> (rand-phrase) (where :pitch (partial * 1.13))))
+       (with (->> (rand-phrase) (where :pitch (partial * 0.93))))
+       ;(with (->> (rand-phrase)))
+       ;(with (->> (rand-phrase)))
+       live/play))
+
+(comment
+  (let [offset1 1.13
+        offset2 0.93]
+    (->> harmonic
+       (with (->> harmonic
+                  (where :pitch (partial * offset1))
+                  (after 0.6)))
+       (with (->> harmonic
+                  (where :pitch (partial * offset2))
+                  (after 1.6)))
+       (live/play))))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Species call       ;;;
