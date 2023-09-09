@@ -81,11 +81,11 @@
 
 (definst butcherbird-23 []
   (let [buffer (load-sample "recordings/AUDIO 23.wav")]
-    (play-buf 1 buffer :action FREE :rate 0.25)))
+    (play-buf 1 buffer :action FREE :rate 1.0)))
 
 (definst butcherbird-24 []
   (let [buffer (load-sample "recordings/AUDIO 24.wav")]
-    (play-buf 1 buffer :action FREE :rate 0.5)))
+    (play-buf 1 buffer :action FREE :rate 1.0)))
 
 (def butcherbirds
   {19 butcherbird-19
