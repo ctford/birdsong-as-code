@@ -176,7 +176,7 @@
       (+ (* 1/14 (sin-osc (* 4 freq))))
       (+ (* 1/25 (sin-osc (* 5 freq))))
       (+ (* 1/35 (sin-osc (* 6 freq))))
-      (* (env-gen (perc 0.3 dur)))
+      (* (env-gen (perc 0.3 (- dur 0.3))))
       (* 1/6 volume)))
 
 (comment
@@ -275,22 +275,24 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn harmonic [root]
-  (fn [n] (-> n (+ 8) (* root) (/ 8))))
+  (fn [n] (-> n (* root))))
 
 (def A-harmonic (harmonic concert-A))
 
 (comment
-  (A-harmonic 0)
-  (A-harmonic 2)
-  (map A-harmonic (range -4 9))
+  (A-harmonic 1)
+  (A-harmonic 8)
+  (map A-harmonic (range 8 17))
 )
 
-(def C-harmonic C5)
+(def middle-C 261.63)
+(def low-C 65.406)
+(def C-harmonic (harmonic low-C))
 
 (comment
   (->> (phrase
          (repeat 1/2)
-         (range -4 9))
+         (range 8 17))
        (where :pitch C-harmonic)
        live/play)
 )
@@ -300,11 +302,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (def species-motif
-  (phrase [1/2 1/2 1] [15 18 16]))
+  (phrase [1/2 1/2 1] [15 17 16]))
 
 (comment
   (->> species-motif
-       (where :pitch A-harmonic)
+       (where :pitch C-harmonic)
        live/play)
 )
 
@@ -397,7 +399,7 @@
 (def melody
   (->>
     [8 9 11 16 13 14 12 16 12 11 17 15 14 16]
-    (phrase [1/4 1/4 1/7 1/5 1/4 1/2 1 1/4 1/4 1/16 1/4 1/6 1/2 1/7 1/3])))
+    (phrase [1/4 1/4 1/7 1/5 1/4 1/2 2/1 1/4 1/4 1/16 1/4 1/6 1/2 2/1])))
 
 (defn join-up [[prev curr & notes]]
   (when curr
@@ -425,6 +427,9 @@
       join-up
       (tempo (bpm 130)))))
 
+(defmethod live/play-note :default [{hertz :pitch seconds :duration}]
+  (when hertz (whistle hertz seconds)))
+
 (comment
   ; Loop the track, allowing live editing.
   (live/play harmonic)
@@ -448,7 +453,8 @@
 (defn rand-phrase []
   (let [start (rand-nth (range 8 16))]
     (->> (phrase (rand-duration) (rand-pitch start))
-       (where :pitch A-harmonic)
+       (where :pitch C-harmonic)
+       (tempo (bpm 130))
        (take 12))))
 
 (comment
