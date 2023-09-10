@@ -183,10 +183,10 @@
 
 (comment
   (do
-    (whistle 300)
-    (whistle 500)
-    (whistle 1500)
-))
+    (whistle 400 3.0)
+    (whistle 500 3.0)
+    (whistle 600 3.0))
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Scales             ;;;
@@ -227,11 +227,14 @@
   (octave-normalise -3 just-ratios)
 )
 
+(defn major [root]
+  (fn [n]
+    (->> just-ratios
+       (relative-to root)
+       (octave-normalise n))))
+
 (def concert-A 440)
-(defn A-major [n]
-  (->> just-ratios
-       (relative-to concert-A)
-       (octave-normalise n)))
+(def A-major (major concert-A))
 
 (comment
   (->> (phrase
@@ -272,6 +275,23 @@
   (->> just-ratios
        (relative-to C5)
        (octave-normalise n)))
+
+(defn major-t [root]
+  (fn [[octave rank]]
+    (-> (relative-to root just-ratios)
+        (nth rank)
+        (* (Math/pow 2 octave)))))
+
+(def C-major-t (major-t 16.352))
+
+(def row-row-t
+  (phrase
+    [3/6 3/6 2/6 1/6 3/6]
+    (map C-major-t [[6 0] [6 0] [6 0] [6 1] [6 2]])))
+
+(comment
+  (->> row-row-t live/play)
+  )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Absolute scale     ;;;
