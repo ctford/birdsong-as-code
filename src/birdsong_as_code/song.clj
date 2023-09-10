@@ -321,28 +321,6 @@
 )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Species motif      ;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(def species-motif
-  (phrase [1/2 1/2 1] [15 17 16]))
-
-(comment
-  (->> species-motif
-       (where :pitch C-harmonic)
-       live/play)
-)
-
-
-
-
-
-
-
-
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Audio 24           ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
