@@ -93,6 +93,18 @@
    23 butcherbird-23
    24 butcherbird-24})
 
+(definst hermit-thrush-02 []
+  (let [buffer (load-sample "recordings/pnas.1406023111.sa02.wav")]
+    (play-buf 1 buffer :action FREE :rate 1.0)))
+
+(definst hermit-thrush-04 []
+  (let [buffer (load-sample "recordings/pnas.1406023111.sa04.wav")]
+    (play-buf 1 buffer :action FREE :rate 1.0)))
+
+(def hermit-thrushes
+  {02 hermit-thrush-02
+   04 hermit-thrush-04})
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Zoömusicology      ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -123,9 +135,9 @@
   (butcherbird-19)
   (butcherbird-23)
   (butcherbird-24)
+  (hermit-thrush-02)
+  (hermit-thrush-04)
 )
-
-
 
 
 
