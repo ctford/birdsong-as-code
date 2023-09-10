@@ -149,7 +149,7 @@
 
 
 (definst beep [frequency 440 volume 1.0]
-  (let [envelope (env-gen (perc 0.01 0.9) :action FREE)]
+  (let [envelope (env-gen (perc 0.3 0.9) :action FREE)]
     (* envelope volume (sin-osc frequency))))
 
 (comment
@@ -182,10 +182,10 @@
         (effects :pan pan :wet wet :room room :volume volume :high limit))))
 
 (comment
-  (do
-    (whistle 400 3.0)
-    (whistle 500 3.0)
-    (whistle 600 3.0))
+    (do
+      (beep 1200)
+      (beep 1500))
+    (whistle 1200)
 )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -205,10 +205,10 @@
   (->>
     (range 0 8)           ; start with ranks of a scale
     (map just-ratios)     ; translate into ratios
-    (relative-to 300)     ; make 300 our "zero"
-    (phrase (repeat 1/2)) ; add durations
+    (relative-to 1200)    ; set our root pitch
+    (phrase (repeat 1/8)) ; add durations
     live/play)
-  )
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Octave equivalence ;;;
@@ -399,17 +399,14 @@
 
 (def melody
   (->>
-    [8 9 11 16 13 14 12 16 12 11 17 15 14 16]
-    (phrase [1/4 1/4 1/7 1/5 1/4 1/2 2/1 1/4 1/4 1/16 1/4 1/6 1/2 2/1])))
+    [8 9 11 16 13 14 12 16 12 11 17 15 13]
+    (phrase [1/4 1/4 1/7 1/5 1/4 1/2 2/1 1/4 1/4 1/16 1/4 1/6 1/2])))
 
-(defn absolute-harmonic-scale [root]
-  (fn [n] (* root n)))
-
-(def harmonic
+(def harmonic-version
   (let [root 110]
     (->>
       melody
-      (where :pitch (absolute-harmonic-scale root))
+      (where :pitch (harmonic root))
       (all :previous (* 16 root))
       (tempo (bpm 130)))))
 
@@ -426,8 +423,8 @@
 
 (comment
   ; Loop the track, allowing live editing.
-  (live/jam (var harmonic))
-  (live/play harmonic)
+  (live/jam (var harmonic-version))
+  (live/play harmonic-version)
   (live/jam (var diatonic))
   (live/play diatonic)
   (live/stop)
@@ -479,7 +476,7 @@
   (let [root 110]
     (->> [14 18 16]
          (phrase [1/8 1/8 1/2])
-         (where :pitch (absolute-harmonic-scale root)))))
+         (where :pitch (harmonic root)))))
 
 (comment
   (live/play species-call)
@@ -549,4 +546,4 @@
 (comment
   (live/jam (var birdloop))
   (live/play birdloop)
-  )
+)
