@@ -178,6 +178,7 @@
         (+ (* 1/35 (sin-osc (* 6 freq))))
         (lpf (+ freq (* freq 6 (env-gen (perc 0.1 (- dur 0.1))))))
         (* (env-gen (perc (min 0.3 dur) (- dur 0.3))))
+        (+ (-> (white-noise) (* 1/60) (rhpf freq 0.1) (* (env-gen (perc 0.15 0.15)))))
         (* 1/6 2 volume)
         (effects :pan pan :wet wet :room room :volume volume :high limit))))
 
@@ -300,98 +301,49 @@
 (defn harmonic [root]
   (fn [n] (-> n (* root))))
 
-(def A-harmonic (harmonic concert-A))
-
-(comment
-  (A-harmonic 1)
-  (A-harmonic 8)
-  (map A-harmonic (range 8 17))
-)
-
-(def middle-C 261.63)
-(def low-C 65.406)
-(def C-harmonic (harmonic low-C))
-
 (comment
   (->> (phrase
          (repeat 1/2)
          (range 8 17))
-       (where :pitch C-harmonic)
+       (where :pitch (harmonic 110))
        live/play)
 )
+
+
+
+
+
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Audio 24           ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-; TODO accidentals
-(def hollis-transcription
-  (let [a (phrase
-            [1/4 1/4 1/4 1/4 1/4 1]
-            [3 3.5 4 5 nil 6.5])
-        b (phrase
-            [1/4 1/2 1/2 1/2 1/2]
-            [3 3 3 2 2])
-        a' (phrase
-             [1/2 1/2 1]
-             [10 10 9])
-        b' (phrase
-             [3/16 3/16 3/16 3/8 3/16 3/16 3/16]
-             [3 5 5 5 4 4 6.5])]
-    (->> a (then b) (then a') (then b'))))
-
-(comment
-  (->> hollis-transcription
-       (where :pitch A-major)
-       ;(where :pitch (comp temperament/equal scale/A scale/major))
-       live/play)
-)
-
-(def my-transcription
+(def transcription
   (let [a (->> (phrase
-                 [1 1/2 1/2 3/2 1]
-                 [4 4 4 6 6]))
+                 [1/4 1/2 1/2 1/4 1/16 1/8   1 3/2]
+                 [ 11  10  10  12   15  20 nil  12]))
         b (->> (phrase
                  [1/2 1/2 1]
-                 [2 2 1]
-                 ))
+                 [  9   9 8]))
         a' (->> (phrase
-                  [1/2 1/2 1]
-                  [10 10 9]))
+                  [1/2 1/2  1]
+                  [ 18  18 16]))
         b' (->> (phrase
-                 [1 1/2 1/2 3/2]
-                 [4 4 4 6])) ]
+                 [1/2 1/4 1/4 1/4 1/16 1/8]
+                 [ 10  10  10  12   15  20]))]
     (->> a (then b) (then a') (then b'))))
 
 (comment
-  (->> my-transcription
-       (where :pitch A-harmonic)
-       ;(map :pitch)
+  (->> transcription
+       (where :pitch (harmonic 110))
+       (tempo (bpm 100))
        live/play)
 )
 
 
-(def my-other-transcription
-  (let [a (->> (phrase
-                 [1 1/2 1/2 3/2 1]
-                 [2 2 2 4 4]))
-        b (->> (phrase
-                 [1/2 1/2 1]
-                 [0.5 0.5 0]))
-        a' (->> (phrase
-                  [1/2 1/2 1]
-                  [9.5 9.5 8]))
-        b' (->> (phrase
-                 [1 1/2 1/2 3/2]
-                 [2 2 2 4])) ]
-    (->> a (then b) (then a') (then b'))))
 
-(comment
-  (->> my-other-transcription
-       (where :pitch (comp (partial * 2) C-harmonic))
-       ;(map :pitch)
-       live/play)
-)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Using it           ;;;
@@ -399,7 +351,7 @@
 
 (def melody
   (->>
-    [8 9 11 16 13 14 12 16 12 11 17 15 13]
+    [8 9 11 16 13 14 12 16 12 11 17 15 11]
     (phrase [1/4 1/4 1/7 1/5 1/4 1/2 2/1 1/4 1/4 1/16 1/4 1/6 1/2])))
 
 (def harmonic-version
@@ -422,12 +374,8 @@
   (when hertz (whistle hertz seconds)))
 
 (comment
-  ; Loop the track, allowing live editing.
-  (live/jam (var harmonic-version))
   (live/play harmonic-version)
-  (live/jam (var diatonic))
   (live/play diatonic)
-  (live/stop)
 )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -438,22 +386,25 @@
   (cons n (lazy-seq (rand-pitch (+ n (rand-int 3) -1)))))
 
 (defn rand-duration []
-  (cons (rand-nth [1/8 1/4 1/2 1 2 4]) (lazy-seq (rand-duration))))
+  (cons (rand-nth [1/8 1/4 1/2 1])
+        (lazy-seq (rand-duration))))
 
 (defn rand-phrase []
   (let [start (rand-nth (range 8 16))]
     (->> (phrase (rand-duration) (rand-pitch start))
-       (where :pitch C-harmonic)
-       (tempo (bpm 130))
-       (take 12))))
+         (take 12))))
 
 (comment
-  (->> (rand-phrase)
-       (with (->> (rand-phrase) (where :pitch (partial * 1.13)) (after 1)))
-       (with (->> (rand-phrase) (where :pitch (partial * 0.93)) (after 2)))
-       ;(with (->> (rand-phrase) (after 1)))
-       ;(with (->> (rand-phrase) (after 2)))
+  (let
+    [key1 (harmonic 100)
+     key2 (harmonic (-> 100 (+ (* 30 (rand)))))
+     key3 (harmonic (-> 100 (+ (* 30 (rand)))))]
+    (->> (rand-phrase)
+       (where :pitch key1)
+       (with (->> (rand-phrase) (where :pitch key2) (after 1/2)))
+       (with (->> (rand-phrase) (where :pitch key3) (after 1)))
        live/play))
+  )
 
 (comment
   (let [offset1 1.13
@@ -481,6 +432,14 @@
 (comment
   (live/play species-call)
 )
+
+
+
+
+
+
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Keytar             ;;;
@@ -515,7 +474,7 @@
         c2-freq 65.41]
     ;(some-> midi (- c2-midi) midi->harmonic (* c2-freq))
     (some-> midi (- c1-midi) midi->harmonic (* c1-freq))
-    ))
+))
 
 (def keytar-instrument corgan #_blorp)
 
