@@ -337,10 +337,38 @@
 
 (comment
   (->> transcription
-       (where :pitch (harmonic 110))
+       (where :pitch (harmonic 132))
        (tempo (bpm 100))
        live/play)
 )
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Audio 23           ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def transcription-23
+  (let [a (->> (phrase
+                 (repeat 1/2)
+                 [10 12 nil 11 7 10 14 nil 12]
+                 ))
+        b (->> (phrase
+                 (repeat 1/2)
+                 [10 12 nil 11 7 10 14 nil 12]))
+        c (->> (phrase
+                 (repeat 1/2)
+                 [10 14 nil 12]))]
+    (->> a (then (after 2 b)) (then (after 2 c)))))
+
+
+(comment
+  (->> transcription-23
+       (where :pitch (harmonic 110))
+       live/play)
+)
+
 
 
 
