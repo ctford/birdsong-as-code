@@ -408,7 +408,7 @@
       (cons prev (join-up (cons curr' notes))))))
 
 (defn absolute-harmonic-scale [root]
-  (fn [pitch] (* root pitch)))
+  (fn [n] (* root n)))
 
 (def harmonic
   (let [root 110]
