@@ -7,13 +7,14 @@
             [leipzig.chord :as chord]
             [leipzig.temperament :as temperament]))
 
-(definst organ [freq 440 dur 1 volume 1.0]
+(definst organ [freq 1320 dur 1.0 volume 1.0]
   (-> (sin-osc freq)
-      (+ (* 1/2 (sin-osc (* 2 freq))))
-      (+ (* 1/7 (sin-osc (* 3 freq))))
-      (+ (* 1/11 (sin-osc (* 4 freq))))
-      (+ (* 1/20 (sin-osc (* 5 freq))))
-      (* (env-gen (perc 0.2 dur)))
+      (+ (* 1/5 (sin-osc (* 2 freq))))
+      (+ (* 1/8 (sin-osc (* 3 freq))))
+      (+ (* 1/14 (sin-osc (* 4 freq))))
+      (+ (* 1/25 (sin-osc (* 5 freq))))
+      (+ (* 1/35 (sin-osc (* 6 freq))))
+      (* (env-gen (perc 0.3 dur)))
       (* 1/6 volume)))
 
 ; Generic machinery
@@ -168,17 +169,20 @@
     (beep 500))
 )
 
-
-(defn bell [root]
-  (let [harmonics (range 1 6)
-        freqs (map #(* % root) harmonics)
-        volumes (map #(/ 1 %) harmonics)]
-    (doall (map beep freqs volumes))))
+(definst whistle [freq 1320 dur 1.0 volume 1.0]
+  (-> (sin-osc freq)
+      (+ (* 1/5 (sin-osc (* 2 freq))))
+      (+ (* 1/8 (sin-osc (* 3 freq))))
+      (+ (* 1/14 (sin-osc (* 4 freq))))
+      (+ (* 1/25 (sin-osc (* 5 freq))))
+      (+ (* 1/35 (sin-osc (* 6 freq))))
+      (* (env-gen (perc 0.3 dur)))
+      (* 1/6 volume)))
 
 (comment
   (do
-    (bell 300)
-    (bell 500))
+    (whistle 300)
+    (whistle 500))
 )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -189,19 +193,19 @@
   [1/1 9/8 5/4 4/3 3/2 5/3 15/8 2/1])
 
 (defn relative-to [root ratios]
-  (map #(* root %) ratios))
-
-(comment
-  (->> just-ratios (relative-to 300))
-)
+  (map (partial * root) ratios))
 
 
 (comment
-  (->> (phrase
-         (repeat 1)
-         (->> just-ratios (relative-to 300)))
-       live/play)
-)
+  (->> just-ratios (relative-to 100))
+
+  (->>
+    (range 0 8)
+    (map just-ratios)
+    (relative-to 300)
+    (phrase (repeat 1/2))
+    live/play)
+  )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Octave equivalence ;;;
