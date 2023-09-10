@@ -484,14 +484,14 @@
 ;;; Species call       ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def species-call'
+(def species-call
   (let [root 110]
     (->> [14 18 16]
          (phrase [1/8 1/8 1/2])
          (where :pitch (absolute-harmonic-scale root)))))
 
 (comment
-  (live/play species-call')
+  (live/play species-call)
 )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
