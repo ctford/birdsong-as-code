@@ -190,7 +190,7 @@
         (+ (* 1/25 (sin-osc (* 5 freq))))
         (+ (* 1/35 (sin-osc (* 6 freq))))
         (lpf (+ freq (* freq 6 (env-gen (perc 0.1 (- dur 0.1))))))
-        (* (env-gen (perc 0.3 (- dur 0.3))))
+        (* (env-gen (perc (min 0.3 dur) (- dur 0.3))))
         (* 1/6 2 volume)
         (effects :pan pan :wet wet :room room :volume volume :high limit))))
 
@@ -448,7 +448,6 @@
 
 (comment
   ; Loop the track, allowing live editing.
-  (live/play harmonic)
   (live/jam (var harmonic))
   (live/play harmonic)
   (live/jam (var diatonic))
