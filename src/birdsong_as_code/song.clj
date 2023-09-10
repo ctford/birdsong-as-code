@@ -181,21 +181,25 @@
     (beep 500))
 )
 
-(definst whistle [freq 1320 dur 1.0 volume 1.0]
-  (-> (sin-osc freq)
-      (+ (* 1/5 (sin-osc (* 2 freq))))
-      (+ (* 1/8 (sin-osc (* 3 freq))))
-      (+ (* 1/14 (sin-osc (* 4 freq))))
-      (+ (* 1/25 (sin-osc (* 5 freq))))
-      (+ (* 1/35 (sin-osc (* 6 freq))))
-      (* (env-gen (perc 0.3 (- dur 0.3))))
-      (* 1/6 volume)))
+(definst whistle [freq 1320 dur 1.0 volume 1.0 pan 0.0 wet 0.5 room 0.5 limit 20000]
+  (let [freq (* freq (+ 1 (* -0.02 (env-gen (perc 0.15 0.15)))))]
+    (-> (sin-osc freq)
+        (+ (* 1/5 (sin-osc (* 2 freq))))
+        (+ (* 1/8 (sin-osc (* 3 freq))))
+        (+ (* 1/14 (sin-osc (* 4 freq))))
+        (+ (* 1/25 (sin-osc (* 5 freq))))
+        (+ (* 1/35 (sin-osc (* 6 freq))))
+        (lpf (+ freq (* freq 6 (env-gen (perc 0.1 (- dur 0.1))))))
+        (* (env-gen (perc 0.3 (- dur 0.3))))
+        (* 1/6 2 volume)
+        (effects :pan pan :wet wet :room room :volume volume :high limit))))
 
 (comment
   (do
     (whistle 300)
-    (whistle 500))
-)
+    (whistle 500)
+    (whistle 1500)
+))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Scales             ;;;
