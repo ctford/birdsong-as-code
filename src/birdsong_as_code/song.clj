@@ -212,11 +212,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn octave-normalise [n ratios]
-  (if (neg? n)
-    (-> n (+ 7) (octave-normalise ratios) (/ 2))
-    (if (< 7 n)
-      (-> n (- 7) (octave-normalise ratios) (* 2))
-      (nth ratios n))))
+  (cond
+    (neg? n) (-> n (+ 7) (octave-normalise ratios) (/ 2))
+    (< 7 n)  (-> n (- 7) (octave-normalise ratios) (* 2))
+    :else    (nth ratios n)))
 
 (comment
   (octave-normalise 0 just-ratios)
