@@ -3,6 +3,7 @@ pom.xml.asc
 *.jar
 *.swp
 *.class
+*.log
 /lib/
 /classes/
 /target/
