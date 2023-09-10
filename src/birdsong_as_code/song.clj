@@ -200,10 +200,10 @@
   (->> just-ratios (relative-to 100))
 
   (->>
-    (range 0 8)
-    (map just-ratios)
-    (relative-to 300)
-    (phrase (repeat 1/2))
+    (range 0 8)           ; start with ranks of a scale
+    (map just-ratios)     ; translate into ratios
+    (relative-to 300)     ; make 300 our "zero"
+    (phrase (repeat 1/2)) ; add durations
     live/play)
   )
 
@@ -224,21 +224,22 @@
   (octave-normalise -3 just-ratios)
 )
 
+(def concert-A 440)
 (defn A-major [n]
   (->> just-ratios
-       (relative-to 440)
+       (relative-to concert-A)
        (octave-normalise n)))
 
 (comment
   (->> (phrase
-         (repeat 1/2)
-         (range -7 8))
+         (repeat 1/2)  ; duration
+         (range -7 8)) ; pitch
        (where :pitch A-major)
        live/play)
 
   (->> (phrase
-         [1 1 2]
-         [[1 4 6] [3 5 7] [2 4 7]])
+         [1 1 2]                    ; duration
+         [[1 4 6] [3 5 7] [2 4 7]]) ; pitch
        (where :pitch A-major)
        live/play)
 )
@@ -263,9 +264,10 @@
   (live/play (->> row-row (with high-row-row) (with low-row-row)))
 )
 
+(def C5 523.25)
 (defn C-major [n]
   (->> just-ratios
-       (relative-to 523.25)
+       (relative-to C5)
        (octave-normalise n)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -275,7 +277,7 @@
 (defn harmonic [root]
   (fn [n] (-> n (+ 8) (* root) (/ 8))))
 
-(def A-harmonic (harmonic 440))
+(def A-harmonic (harmonic concert-A))
 
 (comment
   (A-harmonic 0)
@@ -283,7 +285,7 @@
   (map A-harmonic (range -4 9))
 )
 
-(def C-harmonic (harmonic 523.25))
+(def C-harmonic C5)
 
 (comment
   (->> (phrase
