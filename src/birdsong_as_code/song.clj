@@ -7,16 +7,6 @@
             [leipzig.chord :as chord]
             [leipzig.temperament :as temperament]))
 
-(definst organ [freq 1320 dur 1.0 volume 1.0]
-  (-> (sin-osc freq)
-      (+ (* 1/5 (sin-osc (* 2 freq))))
-      (+ (* 1/8 (sin-osc (* 3 freq))))
-      (+ (* 1/14 (sin-osc (* 4 freq))))
-      (+ (* 1/25 (sin-osc (* 5 freq))))
-      (+ (* 1/35 (sin-osc (* 6 freq))))
-      (* (env-gen (perc 0.3 dur)))
-      (* 1/6 volume)))
-
 ; Generic machinery
 (defsynth walker [out-bus 0 freq 0.5]
   (out:kr out-bus (lf-noise1:kr freq)))
@@ -72,9 +62,6 @@
     (rlpf (* walk resonance) 0.1)
     (* vol 3/2)
     (effects :pan pan :wet wet :room room :volume vol :high limit)))
-
-(defmethod live/play-note :default [{hertz :pitch seconds :duration}]
-  (when hertz (organ hertz seconds)))
 
 (definst butcherbird-19 []
   (let [buffer (load-sample "recordings/AUDIO 19.wav")]
