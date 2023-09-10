@@ -402,11 +402,6 @@
     [8 9 11 16 13 14 12 16 12 11 17 15 14 16]
     (phrase [1/4 1/4 1/7 1/5 1/4 1/2 2/1 1/4 1/4 1/16 1/4 1/6 1/2 2/1])))
 
-(defn join-up [[prev curr & notes]]
-  (when curr
-    (let [curr' (assoc curr :previous (:pitch prev))]
-      (cons prev (join-up (cons curr' notes))))))
-
 (defn absolute-harmonic-scale [root]
   (fn [n] (* root n)))
 
@@ -416,7 +411,6 @@
       melody
       (where :pitch (absolute-harmonic-scale root))
       (all :previous (* 16 root))
-      join-up
       (tempo (bpm 130)))))
 
 (def diatonic
@@ -425,7 +419,6 @@
       melody
       (where :pitch A-major)
       (all :previous (* 16 root))
-      join-up
       (tempo (bpm 130)))))
 
 (defmethod live/play-note :default [{hertz :pitch seconds :duration}]
