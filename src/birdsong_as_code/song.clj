@@ -173,20 +173,18 @@
     (beep 500))
 )
 
-(definst whistle [freq 1320 dur 1.0 volume 1.0 pan 0.0 wet 0.5 room 0.5 limit 20000]
+(definst whistle [freq 1320 dur 1.0 volume 1.0 pan 0.0 wet 0.5 room 0.5 limit 12000]
   (let [freq (* freq (+ 1 (* -0.02 (env-gen (perc 0.15 0.15)))))]
     (-> (sin-osc freq)
         (+ (* 1/5 (sin-osc (* 2 freq))))
         (+ (* 1/8 (sin-osc (* 3 freq))))
         (+ (* 1/14 (sin-osc (* 4 freq))))
         (+ (* 1/25 (sin-osc (* 5 freq))))
-        (+ (* 1/35 (sin-osc (* 6 freq))))
-        (lpf (+ freq (* freq 6 (env-gen (perc 0.1 (- dur 0.1))))))
+        (lpf (+ freq (* freq 5 (env-gen (perc 0.1 (- dur 0.1))))))
         (* (env-gen (perc (min 0.3 dur) (- dur 0.3))))
         (+ (-> (white-noise) (* 1/60) (rhpf freq 0.1) (* (env-gen (perc 0.15 0.15)))))
-        (* 1/6 2 volume)
+        (* volume)
         (effects :pan pan :wet wet :room room :volume volume :high limit))))
-
 
 (comment
   (do
@@ -197,114 +195,32 @@
     (whistle 500))
 )
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Scales             ;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(def just-ratios
-  [1/1 9/8 5/4 4/3 3/2 5/3 15/8 2/1])
-
-(defn relative-to [root ratios]
-  (map (partial * root) ratios))
-
-
-(comment
-  (->> just-ratios (relative-to 100))
-
-  (->>
-    (range 0 8)           ; start with ranks of a scale
-    (map just-ratios)     ; translate into ratios
-    (relative-to 1200)    ; set our root pitch
-    (phrase (repeat 1/8)) ; add durations
-    live/play)
-)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Octave equivalence ;;;
+;;; Exponential scale  ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn octave-normalise [n ratios]
-  (cond
-    (neg? n) (-> n (+ 7) (octave-normalise ratios) (/ 2))
-    (< 7 n)  (-> n (- 7) (octave-normalise ratios) (* 2))
-    :else    (nth ratios n)))
-
-(comment
-  (octave-normalise 0 just-ratios)
-  (octave-normalise 7 just-ratios)
-  (octave-normalise 4 just-ratios)
-  (octave-normalise -3 just-ratios)
-)
-
-(defn major [root]
-  (fn [n]
-    (->> just-ratios
-       (relative-to root)
-       (octave-normalise n))))
+(defn chromatic [root]
+  (let [twelfth-root (Math/pow 2 1/12)]
+    (fn [n] (* root (Math/pow twelfth-root n)))))
 
 (def concert-A 440)
-(def A-major (major concert-A))
+(def A-chromatic (chromatic concert-A))
 
 (comment
   (->> (phrase
-         (repeat 1/2)  ; duration
-         (range -7 8)) ; pitch
-       (where :pitch A-major)
+         (repeat 1/2)
+         [12 14 16 17 19 21 23 24])
+       (where :pitch A-chromatic)
        live/play)
 
   (->> (phrase
-         [1 1 2]                    ; duration
-         [[1 4 6] [3 5 7] [2 4 7]]) ; pitch
-       (where :pitch A-major)
+         [3/6 3/6 2/6 1/6 3/6]
+         [12 12 12 14 16])
+       (where :pitch A-chromatic)
        live/play)
 )
-
-(def row-row
-  (->> (phrase [3/6 3/6 2/6 1/6 3/6]
-               [0 0 0 1 2])
-       (where :pitch A-major)))
-
-(def high-row-row
-  (->> row-row
-       (where :pitch (partial * 2))))
-
-(def low-row-row
-  (->> row-row
-       (where :pitch (partial * 1/2))))
-
-(comment
-  (live/play row-row)
-  (live/play high-row-row)
-  (live/play low-row-row)
-  (live/play (->> row-row (with high-row-row) (with low-row-row)))
-)
-
-(def C5 523.25)
-(defn C-major [n]
-  (->> just-ratios
-       (relative-to C5)
-       (octave-normalise n)))
-
-(defn major-t [root]
-  (fn [[octave rank]]
-    (-> (relative-to root just-ratios)
-        (nth rank)
-        (* (Math/pow 2 octave)))))
-
-(def C-major-t (major-t 16.352))
-
-(def row-row-t
-  (phrase
-    [3/6 3/6 2/6 1/6 3/6]
-    (map C-major-t [[6 0] [6 0] [6 0] [6 1] [6 2]])))
-
-(comment
-  (->> row-row-t live/play)
-  )
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Absolute scale     ;;;
+;;; Linear scale       ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn harmonic [root]
@@ -315,10 +231,44 @@
 (comment
   (->> (phrase
          (repeat 1/2)
-         (range 8 17))
+         [8 9 10 11 12 13 14 15 16])
+       (where :pitch A-harmonic)
+       live/play)
+
+  (->> (phrase
+         [3/6 3/6 2/6 1/6 3/6]
+         [8 8 8 9 10])
        (where :pitch A-harmonic)
        live/play)
 )
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Together           ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(comment
+  (do (->> (phrase
+             (repeat 1/2)
+             [8 9 10 11 12 13 14 15 16])
+           (where :pitch A-harmonic)
+           live/play)
+      (->> (phrase
+             (repeat 1/2)
+             [12 14 16 17 19 21 22 23 24])
+           (where :pitch A-chromatic)
+           live/play))
+  (do
+    (->> (phrase
+           [3/6 3/6 2/6 1/6 3/6]
+           [8 8 8 9 10])
+         (where :pitch A-harmonic)
+         live/play)
+    (->> (phrase
+           [3/6 3/6 2/6 1/6 3/6]
+           [12 12 12 14 16])
+         (where :pitch A-chromatic)
+         live/play))
+)
+
 
 
 
@@ -331,8 +281,8 @@
 
 (def transcription-24
   (let [a (->> (phrase
-                 [1/4 1/2 1/2 1/4 1/16 1/8   1 3/2]
-                 [ 11  10  10  12   15  20 nil  12]))
+                 [1/64 1/2 1/2 1/4 1/64 1/64   1 3/2]
+                 [  11  10  10  12   15  20  nil  12]))
         b (->> (phrase
                  [1/2 1/2 1]
                  [  9   9 8]))
@@ -340,8 +290,8 @@
                   [1/2 1/2  1]
                   [ 18  18 16]))
         b' (->> (phrase
-                 [1/2 1/4 1/4 1/4 1/16 1/8]
-                 [ 10  10  10  12   15  20]))]
+                 [1/64 1/2 1/4 1/4 1/4 1/64 1/64]
+                 [  11  10  10  10  12   15   20]))]
     (->> a (then b) (then a') (then b'))))
 
 (comment
@@ -372,7 +322,6 @@
                  [10 14 nil 12]))]
     (->> a (then (after 2 b)) (then (after 2 c)))))
 
-
 (comment
   (->> transcription-23
        (where :pitch (harmonic 110))
@@ -381,41 +330,8 @@
 )
 
 
-
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Using it           ;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(def melody
-  (->>
-    [8 9 11 16 13 14 12 16 12 11 17 15 11]
-    (phrase [1/4 1/4 1/7 1/5 1/4 1/2 2/1 1/4 1/4 1/16 1/4 1/6 1/2])))
-
-(def harmonic-version
-  (let [root 110]
-    (->>
-      melody
-      (where :pitch (harmonic root))
-      (all :previous (* 16 root))
-      (tempo (bpm 130)))))
-
-(def diatonic
-  (let [root 110]
-    (->>
-      melody
-      (where :pitch A-major)
-      (all :previous (* 16 root))
-      (tempo (bpm 130)))))
-
 (defmethod live/play-note :default [{hertz :pitch seconds :duration}]
   (when hertz (whistle hertz seconds)))
-
-(comment
-  (live/play harmonic-version)
-  (live/play diatonic)
-)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Not in tune        ;;;
@@ -495,18 +411,7 @@
          32,  34,  36,  38,  40,  42,  44,, 48,, 52,  54,  56,, 60]
       midi)))
 
-(defn midi->diatonic [midi]
-  (let [x nil]
-    (get
-      [[0 0]  x  [0 2]  x  [0 4][0 5]  x  [0 7]  x  [0 9]  x  [0 11]
-       [1 0]  x  [1 2]  x  [1 4][1 5]  x  [1 7]  x  [1 9]  x  [1 11]
-       [2 0]  x  [2 2]  x  [2 4][2 5]  x  [2 7]  x  [2 9]  x  [2 11]
-       [3 0]  x  [3 2]  x  [3 4][3 5]  x  [3 7]  x  [3 9]  x  [3 11]
-       [4 0]  x  [4 2]  x  [4 4][4 5]  x  [4 7]  x  [4 9]  x  [4 11]
-       [5 0]  x  [5 2]  x  [5 4][5 5]  x  [5 7]  x  [5 9]  x  [5 11]]
-      midi)))
-
-(defn midi->freq [midi]
+(defn midi->hfreq [midi]
   (let [c1-midi 24
         c1-freq 37.71
         c2-midi 36
@@ -514,6 +419,9 @@
     ;(some-> midi (- c2-midi) midi->harmonic (* c2-freq))
     (some-> midi (- c1-midi) midi->harmonic (* c1-freq))
 ))
+
+(def midi->freq midi->hfreq)
+;(def midi->freq midi->hz)
 
 (def keytar-instrument corgan #_blorp)
 
@@ -537,9 +445,9 @@
   ((butcherbirds n)))
 
 (def birdloop
-  [{:time 0 :duration 8 :bird 23.3 :part :butcherbird}
+  [{:time 0 :duration 8 :bird 23 :part :butcherbird}
    {:time 0 :duration 8 :bird 24 :part :butcherbird}
-   #_{:time 16 :duration 8 :bird 19 :part :butcherbird}])
+   {:time 16 :duration 8 :bird 19 :part :butcherbird}])
 
 (comment
   (live/jam (var birdloop))
