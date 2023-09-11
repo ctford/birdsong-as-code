@@ -97,7 +97,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (comment
-  "The study of music in animal culture."
+  "The study of music in animal culture"
 )
 
 (comment
