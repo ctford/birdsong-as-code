@@ -75,10 +75,15 @@
   (let [buffer (load-sample "recordings/AUDIO 24.wav")]
     (play-buf 1 buffer :action FREE :rate 1.0)))
 
+(definst butcherbird-23-transposed []
+  (let [buffer (load-sample "recordings/AUDIO 23.wav")]
+    (play-buf 1 buffer :action FREE :rate 132/110)))
+
 (def butcherbirds
-  {19 butcherbird-19
-   23 butcherbird-23
-   24 butcherbird-24})
+  {19   butcherbird-19
+   23   butcherbird-23
+   23.3 butcherbird-23-transposed
+   24   butcherbird-24})
 
 (definst hermit-thrush-02 []
   (let [buffer (load-sample "recordings/pnas.1406023111.sa02.wav")]
@@ -182,12 +187,16 @@
         (* 1/6 2 volume)
         (effects :pan pan :wet wet :room room :volume volume :high limit))))
 
+
 (comment
-    (do
-      (beep 1200)
-      (beep 1500))
-    (whistle 1200)
+  (do
+    (beep 300)
+    (beep 500))
+  (do
+    (whistle 300)
+    (whistle 500))
 )
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Scales             ;;;
@@ -301,15 +310,15 @@
 (defn harmonic [root]
   (fn [n] (-> n (* root))))
 
+(def A-harmonic (harmonic (/ concert-A 4)))
+
 (comment
   (->> (phrase
          (repeat 1/2)
          (range 8 17))
-       (where :pitch (harmonic 110))
+       (where :pitch A-harmonic)
        live/play)
 )
-
-
 
 
 
@@ -320,7 +329,7 @@
 ;;; Audio 24           ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def transcription
+(def transcription-24
   (let [a (->> (phrase
                  [1/4 1/2 1/2 1/4 1/16 1/8   1 3/2]
                  [ 11  10  10  12   15  20 nil  12]))
@@ -336,10 +345,11 @@
     (->> a (then b) (then a') (then b'))))
 
 (comment
-  (->> transcription
+  (->> transcription-24
        (where :pitch (harmonic 132))
        (tempo (bpm 100))
        live/play)
+  (butcherbird-24)
 )
 
 
@@ -367,6 +377,7 @@
   (->> transcription-23
        (where :pitch (harmonic 110))
        live/play)
+  (butcherbird-23)
 )
 
 
@@ -526,9 +537,9 @@
   ((butcherbirds n)))
 
 (def birdloop
-  [{:time 0 :duration 8 :bird 23 :part :butcherbird}
-   {:time 8 :duration 8 :bird 24 :part :butcherbird}
-   {:time 16 :duration 8 :bird 19 :part :butcherbird}])
+  [{:time 0 :duration 8 :bird 23.3 :part :butcherbird}
+   {:time 0 :duration 8 :bird 24 :part :butcherbird}
+   #_{:time 16 :duration 8 :bird 19 :part :butcherbird}])
 
 (comment
   (live/jam (var birdloop))
