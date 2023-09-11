@@ -5,7 +5,8 @@
             [leipzig.live :as live]
             [leipzig.live :refer [stop]]
             [leipzig.chord :as chord]
-            [leipzig.temperament :as temperament]))
+            [leipzig.temperament :as temperament]
+            [overtone.inst.drum :as drums]))
 
 ; Generic machinery
 (defsynth walker [out-bus 0 freq 0.5]
@@ -441,6 +442,13 @@
              (ctl (@notes-in-progress note) :gate 0))
            ::midi-note-off))
 
+(def kit {:kick #(drums/kick2 66)
+          :tick #(drums/closed-hat :t 0.01 :hi 20),
+          :tock #(drums/open-hat :t 0.04 :lo 50 :hi 100)})
+
+(defmethod live/play-note :beat [{drum :drum}]
+    ((kit drum)))
+
 (defmethod live/play-note :butcherbird [{n :bird seconds :duration}]
   ((butcherbirds n)))
 
@@ -449,7 +457,17 @@
    {:time 0 :duration 8 :bird 24 :part :butcherbird}
    {:time 16 :duration 8 :bird 19 :part :butcherbird}])
 
+(def drumloop
+  (->> (rhythm
+         (cycle [1/2 1/2 1/2 1/4 1/4 ]))
+    (having :drum (cycle [:kick :tick :tick :tock :kick]))
+    (all :part :beat)
+    (take-while #(-> % :time (< 24)))
+    (tempo (bpm 90))))
+
+(def jamloop (with (times 2 drumloop) birdloop))
+
 (comment
-  (live/jam (var birdloop))
-  (live/play birdloop)
+  (live/jam (var jamloop))
+  (live/play jamloop)
 )
