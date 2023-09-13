@@ -197,49 +197,49 @@
 )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Exponential scale  ;;;
+;;; Logarithmic scale  ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn chromatic [root]
+(defn logarithmic [root]
   (let [twelfth-root (Math/pow 2 1/12)]
     (fn [n] (* root (Math/pow twelfth-root n)))))
 
 (def concert-A 440)
-(def A-chromatic (chromatic concert-A))
+(def A-logarithmic (logarithmic concert-A))
 
 (comment
   (->> (phrase
          (repeat 1/2)
          [12 14 16 17 19 21 23 24])
-       (where :pitch A-chromatic)
+       (where :pitch A-logarithmic)
        live/play)
 
   (->> (phrase
          [3/6 3/6 2/6 1/6 3/6]
          [12 12 12 14 16])
-       (where :pitch A-chromatic)
+       (where :pitch A-logarithmic)
        live/play)
 )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Linear scale       ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn harmonic [root]
+(defn linear [root]
   (fn [n] (-> n (* root))))
 
-(def A-harmonic (harmonic (/ concert-A 4)))
+(def A-linear (linear (/ concert-A 4)))
 
 (comment
   (->> (phrase
          (repeat 1/2)
          [8 9 10 11 12 13 14 15 16])
-       (where :pitch A-harmonic)
+       (where :pitch A-linear)
        live/play)
 
   (->> (phrase
          [3/6 3/6 2/6 1/6 3/6]
          [8 8 8 9 10])
-       (where :pitch A-harmonic)
+       (where :pitch A-linear)
        live/play)
 )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -250,23 +250,23 @@
   (do (->> (phrase
              (repeat 1/2)
              [8 9 10 11 12 13 14 15 16])
-           (where :pitch A-harmonic)
+           (where :pitch A-linear)
            live/play)
       (->> (phrase
              (repeat 1/2)
              [12 14 16 17 19 21 22 23 24])
-           (where :pitch A-chromatic)
+           (where :pitch A-logarithmic)
            live/play))
   (do
     (->> (phrase
            [3/6 3/6 2/6 1/6 3/6]
            [8 8 8 9 10])
-         (where :pitch A-harmonic)
+         (where :pitch A-linear)
          live/play)
     (->> (phrase
            [3/6 3/6 2/6 1/6 3/6]
            [12 12 12 14 16])
-         (where :pitch A-chromatic)
+         (where :pitch A-logarithmic)
          live/play))
 )
 
@@ -297,7 +297,7 @@
 
 (comment
   (->> transcription-24
-       (where :pitch (harmonic 132))
+       (where :pitch (linear 132))
        (tempo (bpm 100))
        live/play)
   (butcherbird-24)
@@ -325,7 +325,7 @@
 
 (comment
   (->> transcription-23
-       (where :pitch (harmonic 110))
+       (where :pitch (linear 110))
        live/play)
   (butcherbird-23)
 )
@@ -352,9 +352,9 @@
 
 (comment
   (let
-    [key1 (harmonic 100)
-     key2 (harmonic (-> 100 (+ (* 30 (rand)))))
-     key3 (harmonic (-> 100 (+ (* 30 (rand)))))]
+    [key1 (linear 100)
+     key2 (linear (-> 100 (+ (* 30 (rand)))))
+     key3 (linear (-> 100 (+ (* 30 (rand)))))]
     (->> (rand-phrase)
        (where :pitch key1)
        (with (->> (rand-phrase) (where :pitch key2) (after 1/2)))
@@ -365,11 +365,11 @@
 (comment
   (let [offset1 1.13
         offset2 0.93]
-    (->> harmonic
-       (with (->> harmonic
+    (->> linear
+       (with (->> linear
                   (where :pitch (partial * offset1))
                   (after 0.6)))
-       (with (->> harmonic
+       (with (->> linear
                   (where :pitch (partial * offset2))
                   (after 1.6)))
        (live/play))))
@@ -383,7 +383,7 @@
   (let [root 110]
     (->> [14 18 16]
          (phrase [1/8 1/8 1/2])
-         (where :pitch (harmonic root)))))
+         (where :pitch (linear root)))))
 
 (comment
   (live/play species-call)
@@ -401,7 +401,7 @@
 ;;; Keytar             ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn midi->harmonic [midi]
+(defn midi->linear [midi]
   (let [x nil]
     (get
       [   1    x    x    x    x    x    x    x    x    x    x    x
@@ -417,8 +417,8 @@
         c1-freq 37.71
         c2-midi 36
         c2-freq 65.41]
-    ;(some-> midi (- c2-midi) midi->harmonic (* c2-freq))
-    (some-> midi (- c1-midi) midi->harmonic (* c1-freq))
+    ;(some-> midi (- c2-midi) midi->linear (* c2-freq))
+    (some-> midi (- c1-midi) midi->linear (* c1-freq))
 ))
 
 (def midi->freq midi->hfreq)
