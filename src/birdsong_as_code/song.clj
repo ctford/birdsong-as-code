@@ -66,11 +66,11 @@
 
 (definst butcherbird-19 []
   (let [buffer (load-sample "recordings/AUDIO 19.wav")]
-    (play-buf 1 buffer :action FREE :rate 1.0)))
+    (play-buf 1 buffer :action FREE :rate 0.5)))
 
 (definst butcherbird-23 []
   (let [buffer (load-sample "recordings/AUDIO 23.wav")]
-    (play-buf 1 buffer :action FREE :rate 1.0)))
+    (play-buf 1 buffer :action FREE :rate 0.25)))
 
 (definst butcherbird-24 []
   (let [buffer (load-sample "recordings/AUDIO 24.wav")]
@@ -381,8 +381,8 @@
 
 (def species-call
   (let [root 110]
-    (->> [14 18 16]
-         (phrase [1/8 1/8 1/2])
+    (->> [17 17 16]
+         (phrase [1/4 1/4 1/2])
          (where :pitch (linear root)))))
 
 (comment
