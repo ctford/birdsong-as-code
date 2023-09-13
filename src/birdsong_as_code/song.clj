@@ -64,13 +64,17 @@
     (* vol 3/2)
     (effects :pan pan :wet wet :room room :volume vol :high limit)))
 
+(definst butcherbird-15 []
+  (let [buffer (load-sample "recordings/AUDIO 15.wav")]
+    (play-buf 1 buffer :action FREE :rate 1.0)))
+
 (definst butcherbird-19 []
   (let [buffer (load-sample "recordings/AUDIO 19.wav")]
-    (play-buf 1 buffer :action FREE :rate 0.5)))
+    (play-buf 1 buffer :action FREE :rate 1.0)))
 
 (definst butcherbird-23 []
   (let [buffer (load-sample "recordings/AUDIO 23.wav")]
-    (play-buf 1 buffer :action FREE :rate 0.25)))
+    (play-buf 1 buffer :action FREE :rate 1.0)))
 
 (definst butcherbird-24 []
   (let [buffer (load-sample "recordings/AUDIO 24.wav")]
@@ -81,7 +85,8 @@
     (play-buf 1 buffer :action FREE :rate 132/110)))
 
 (def butcherbirds
-  {19   butcherbird-19
+  {15   butcherbird-15
+   19   butcherbird-19
    23   butcherbird-23
    23.3 butcherbird-23-transposed
    24   butcherbird-24})
@@ -386,6 +391,7 @@
          (where :pitch (linear root)))))
 
 (comment
+  (butcherbird-15)
   (live/play species-call)
 )
 
