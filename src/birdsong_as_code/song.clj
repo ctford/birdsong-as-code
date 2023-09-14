@@ -47,6 +47,7 @@
     (+ (* 1/3 (sin-osc freq) (env-gen (perc under-attack dur))))
     (+ (* (lpf (* 1 (brown-noise)) 500) (env-gen (perc 0.01 0.2))))
     (* (env-gen (adsr attack 0.05 1) (* gate (line:kr 1.0 0.0 dur))))
+    (+ (* 2 (sin-osc freq) (env-gen (perc 0.01 0.1))))
     (rlpf (* walk resonance) 0.1)
     (* vol 3)
     (effects :pan pan :wet wet :room room :volume vol :high limit)))
