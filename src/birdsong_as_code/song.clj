@@ -138,6 +138,9 @@
 
 
 
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Zoömusicology      ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -146,19 +149,17 @@
   "The study of music in animal culture"
 )
 
-(comment
-  "Is Birdsong Music?"
-  "Hollis Taylor"
+(def source1
+  {:title    "Is Birdsong Music?"
+   :type     :book,
+   :author   "Hollis Taylor"
+   :bird     "Pied Butcherbird"})
 
-  "Pied Butcherbird, cracticus nigrogularis"
-)
-
-(comment
-  "Overtone-based pitch selection in hermit thrush song"
-  "Doolittle, Gingras, Endres and Fitch"
-
-  "Hermit Thrush, catharus guttatus"
-)
+(def source2
+  {:title    "Overtone-based pitch selection in hermit thrush song",
+   :type     :article,
+   :authors ["Doolittle", "Gingras", "Endres", "Fitch"]
+   :bird     "Hermit Thrush"})
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Birdsong is music  ;;;
@@ -170,7 +171,6 @@
   (hermit-thrush-02)
   (hermit-thrush-04)
 )
-
 
 
 
@@ -201,10 +201,8 @@
 
 
 
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Envelopes shape notes ;;;
+;;; Shaping notes         ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (definst beep [frequency 440 volume 1.0]
@@ -217,7 +215,6 @@
     (beep 300)
     (beep 500))
 )
-
 
 
 
@@ -238,9 +235,7 @@
         (* envelope 2/5 volume))))
 
 (comment
-  (do
-    (beep 300)
-    (beep 500))
+  (beep)
   (do
     (boop 300)
     (boop 500))
