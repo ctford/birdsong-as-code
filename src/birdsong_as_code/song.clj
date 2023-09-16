@@ -150,7 +150,7 @@
   (->>
     (range 1 8)
     (map #(repeat % %))
-    (reduce concat))
+    (reduce concat)))
 
 
 
@@ -248,6 +248,7 @@
   (do
     (beep 300)
     (beep 500))
+)
 
 
 
@@ -355,20 +356,38 @@
                   [1/2 1/2  1]
                   [ 18  18 16]))
         b' (->> (phrase
-                 [1/64 1/2 1/4 1/4 1/4 1/64 1/64]
-                 [  11  10  10  10  12   15   20]))]
-    (->> a (then b) (then a') (then b'))))
+                  [1/64 1/2 1/4 1/4 1/4 1/64 1/64]
+                  [  11  10  10  10  12   15   20]))]
+    (->> a (then b) (then a') (then b')
+         (where :pitch (linear 132))
+         (tempo (bpm 100)))))
 
 (comment
-  (->> transcription-24
-       (where :pitch (linear 132))
-       (tempo (bpm 100))
-       live/play)
+  (->> transcription-24 live/play)
   (butcherbird-24)
 )
 
+(def transcription-24-raw
+  (let [a (->> (phrase
+                 [1/64  1/2  1/2  1/4 1/64 1/64    1  3/2]
+                 [1454 1303 1303 1559  nil  nil  nil 1302]))
+        b (->> (phrase
+                 [ 1/2  1/2    1]
+                 [1111 1111 1043]))
+        a' (->> (phrase
+                  [1/2 1/2  1]
+                  [2348 2348 2154]))
+        b' (->> (phrase
+                 [1/64  1/2  1/4  1/4  1/4 1/64 1/64]
+                 [ nil 1300 1300 1300 1593  nil  nil]))]
+    (->> a (then b) (then a') (then b'))))
 
 
+(comment
+  (do
+    (->> transcription-24-raw live/play)
+    (butcherbird-24))
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Audio 23           ;;;
@@ -377,8 +396,7 @@
 (def transcription-23
   (let [a (->> (phrase
                  (repeat 1/2)
-                 [10 12 nil 11 7 10 14 nil 12]
-                 ))
+                 [10 12 nil 11 7 10 14 nil 12]))
         b (->> (phrase
                  (repeat 1/2)
                  [10 12 nil 11 7 10 14 nil 12]))
