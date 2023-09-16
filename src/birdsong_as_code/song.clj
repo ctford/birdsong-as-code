@@ -149,7 +149,7 @@
 (def computed
   (->>
     (range 1 8)
-    (map #(repeat % %))
+    (map (fn [n] (repeat n n)))
     (reduce concat)))
 
 
