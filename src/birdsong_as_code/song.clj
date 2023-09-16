@@ -154,18 +154,18 @@
 
 (def pitches (partial map :pitch))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; BIRDSONG AS CODE   ;;;
-;;;                    ;;;
-;;; Chris Ford         ;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; BIRDSONG AS CODE                           ;;;
+;;;                                            ;;;
+;;; Chris Ford                                 ;;;
+;;; https://github.com/ctford/birdsong-as-code ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (comment
   (* 3/2 220)
   (+ 440 110)
   (butcherbird-24)
 )
-
 
 
 
