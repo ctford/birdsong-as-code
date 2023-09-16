@@ -294,7 +294,6 @@
 
 
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Harmonics          ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -323,18 +322,18 @@
   (let [twelfth-root (Math/pow 2 1/12)]
     (fn [n] (* root (Math/pow twelfth-root n)))))
 
-(def concert-A 440)
-(def A-logarithmic (logarithmic concert-A))
-
 (def logarithmic-scale
   (->> (phrase
-         (repeat 1/2)                 ; Durations (all half a second)
-         [12 14 16 17 19 21 23 24])   ; Pitches
-       (where :pitch A-logarithmic))) ; Put the pitches in the logarithmic scale
+         (repeat 1/2)                     ; Durations (all half a second)
+         [12 14 16 17 19 21 23 24])       ; Pitches
+       (where :pitch (logarithmic 440)))) ; Put pitches in the logarithmic scale
 
 (comment
   (->> logarithmic-scale live/play)
 )
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Linear scale       ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -342,17 +341,17 @@
 (defn linear [root]
   (fn [n] (* root n)))
 
-(def A-linear (linear (/ concert-A 4)))
-
 (def linear-scale
   (->> (phrase
-         (repeat 1/2)                 ; Durations (all half a second)
-         [8 9 10 11 12 13 14 15 16])  ; Pitches
-       (where :pitch A-linear)))      ; Put the pitches in the linear scale
+         (repeat 1/2)                ; Durations (all half a second)
+         [8 9 10 11 12 13 14 15 16]) ; Pitches
+       (where :pitch (linear 110)))) ; Put pitches in the linear scale
 
 (comment
   (->> linear-scale live/play)
 )
+
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
