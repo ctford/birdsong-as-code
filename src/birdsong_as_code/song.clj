@@ -78,6 +78,9 @@
         (* volume)
         (effects :pan pan :wet wet :room room :volume volume :high limit))))
 
+(defmethod live/play-note :default [{hertz :pitch seconds :duration}]
+  (when hertz (whistle hertz seconds)))
+
 (definst butcherbird-15 []
   (let [buffer (load-sample "recordings/AUDIO 15.wav")]
     (play-buf 1 buffer :action FREE :rate 1.0)))
@@ -371,8 +374,6 @@
 )
 
 
-(defmethod live/play-note :default [{hertz :pitch seconds :duration}]
-  (when hertz (whistle hertz seconds)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Not in tune        ;;;
