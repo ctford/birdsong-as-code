@@ -381,14 +381,14 @@
 
 (def species-call
   (->> (phrase
-         [1/8 1/8 1/4]               ; Durations
-         [18 18 16])                 ; Pitches
-       (where :pitch (linear 110)))) ; Put the pitches in the linear scale
+         [1/8 1/8 1/4]    ; Durations
+         [ 18  18  16]))) ; Pitches
 
 (comment
-  (live/play species-call)
+  (->> species-call (where :pitch (linear 110)) live/play)
   (butcherbird-15)
 )
+
 
 
 
