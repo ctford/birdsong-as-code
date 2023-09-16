@@ -65,6 +65,19 @@
     (* vol 3/2)
     (effects :pan pan :wet wet :room room :volume vol :high limit)))
 
+(definst whistle [freq 1320 dur 1.0 volume 1.0 pan 0.0 wet 0.5 room 0.5 limit 12000]
+  (let [freq (* freq (+ 1 (* -0.02 (env-gen (perc 0.15 0.15)))))]
+    (-> (sin-osc freq)
+        (+ (* 1/5 (sin-osc (* 2 freq))))
+        (+ (* 1/8 (sin-osc (* 3 freq))))
+        (+ (* 1/14 (sin-osc (* 4 freq))))
+        (+ (* 1/25 (sin-osc (* 5 freq))))
+        (lpf (+ freq (* freq 5 (env-gen (perc 0.1 (- dur 0.1))))))
+        (* (env-gen (perc (min 0.3 dur) (- dur 0.3))))
+        (+ (-> (white-noise) (* 1/60) (rhpf freq 0.1) (* (env-gen (perc 0.15 0.15)))))
+        (* volume)
+        (effects :pan pan :wet wet :room room :volume volume :high limit))))
+
 (definst butcherbird-15 []
   (let [buffer (load-sample "recordings/AUDIO 15.wav")]
     (play-buf 1 buffer :action FREE :rate 1.0)))
@@ -106,16 +119,15 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; BIRDSONG AS CODE   ;;;
+;;;                    ;;;
+;;; Chris Ford         ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-
-
-
-
-
-
-
-
+(comment
+  (* 3/2 220)
+  (+ 440 110)
+  (butcherbird-24)
+)
 
 
 
@@ -150,9 +162,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (comment
-  (butcherbird-19)
-  (butcherbird-23)
   (butcherbird-24)
+  (butcherbird-19)
   (hermit-thrush-02)
   (hermit-thrush-04)
 )
@@ -179,13 +190,34 @@
 )
 
 
+
+
+
+
+
+
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Envelopes shape notes ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (definst beep [frequency 440 volume 1.0]
   (let [envelope (env-gen (perc 0.3 0.9) :action FREE)]
-    (* envelope volume (sin-osc frequency))))
+    (-> (sin-osc frequency)
+        (* envelope volume))))
 
 (comment
-  (beep 300)
+  (do
+    (beep 300)
+    (beep 500))
 )
+
+
+
+
 
 
 
@@ -193,32 +225,22 @@
 ;;; Harmonics          ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(comment
-  (do
-    (beep 300)
-    (beep 500))
-)
-
-(definst whistle [freq 1320 dur 1.0 volume 1.0 pan 0.0 wet 0.5 room 0.5 limit 12000]
-  (let [freq (* freq (+ 1 (* -0.02 (env-gen (perc 0.15 0.15)))))]
-    (-> (sin-osc freq)
-        (+ (* 1/5 (sin-osc (* 2 freq))))
-        (+ (* 1/8 (sin-osc (* 3 freq))))
-        (+ (* 1/14 (sin-osc (* 4 freq))))
-        (+ (* 1/25 (sin-osc (* 5 freq))))
-        (lpf (+ freq (* freq 5 (env-gen (perc 0.1 (- dur 0.1))))))
-        (* (env-gen (perc (min 0.3 dur) (- dur 0.3))))
-        (+ (-> (white-noise) (* 1/60) (rhpf freq 0.1) (* (env-gen (perc 0.15 0.15)))))
-        (* volume)
-        (effects :pan pan :wet wet :room room :volume volume :high limit))))
+(definst boop [frequency 440 volume 1.0]
+  (let [envelope (env-gen (perc 0.3 0.9) :action FREE)]
+    (-> (+ (* 1/1 (sin-osc (* 1 frequency))))
+        (+ (* 1/2 (sin-osc (* 2 frequency))))
+        (+ (* 1/3 (sin-osc (* 3 frequency))))
+        (+ (* 1/4 (sin-osc (* 4 frequency))))
+        (+ (* 1/5 (sin-osc (* 5 frequency))))
+        (* envelope 2/5 volume))))
 
 (comment
   (do
     (beep 300)
     (beep 500))
   (do
-    (whistle 300)
-    (whistle 500))
+    (boop 300)
+    (boop 500))
 )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
