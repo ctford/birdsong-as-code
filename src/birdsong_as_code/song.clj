@@ -231,10 +231,30 @@
         (* envelope volume))))
 
 (comment
+    (beep 500)
+)
+
+
+
+
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Fractions sound good  ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(comment
   (do
     (beep 300)
     (beep 500))
-)
+
+
+
+
+
+
 
 
 
@@ -288,6 +308,9 @@
   (->> logarithmic-scale live/play)
   (->> logarithmic-row-row live/play)
 )
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Linear scale       ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -313,6 +336,11 @@
   (->> linear-scale live/play)
   (->> linear-row-row live/play)
 )
+
+
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Together           ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -326,7 +354,6 @@
        (with linear-row-row)
        live/play)
 )
-
 
 
 
@@ -388,6 +415,12 @@
   (butcherbird-23)
 )
 
+
+
+
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Species call       ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -402,9 +435,6 @@
   (live/play species-call)
   (butcherbird-15)
 )
-
-
-
 
 
 
