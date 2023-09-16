@@ -355,28 +355,6 @@
 ;;; Audio 24           ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def transcription-24
-  (let [a (->> (phrase
-                 [1/64 1/2 1/2 1/4 1/64 1/64   1 3/2]
-                 [  11  10  10  12   15  20  nil  12]))
-        b (->> (phrase
-                 [1/2 1/2 1]
-                 [  9   9 8]))
-        a' (->> (phrase
-                  [1/2 1/2  1]
-                  [ 18  18 16]))
-        b' (->> (phrase
-                  [1/64 1/2 1/4 1/4 1/4 1/64 1/64]
-                  [  11  10  10  10  12   15   20]))]
-    (->> a (then b) (then a') (then b')
-         (where :pitch (linear 131))
-         (tempo (bpm 100)))))
-
-(comment
-  (->> transcription-24 live/play)
-  (butcherbird-24)
-)
-
 (def transcription-24'
   (let [a (->> (phrase
                  [0.256 0.187 0.185 0.956 0.595]
