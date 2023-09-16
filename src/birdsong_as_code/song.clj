@@ -373,49 +373,6 @@
   (butcherbird-23)
 )
 
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Not in tune        ;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn rand-pitch [n]
-  (cons n (lazy-seq (rand-pitch (+ n (rand-int 3) -1)))))
-
-(defn rand-duration []
-  (cons (rand-nth [1/8 1/4 1/2 1])
-        (lazy-seq (rand-duration))))
-
-(defn rand-phrase []
-  (let [start (rand-nth (range 8 16))]
-    (->> (phrase (rand-duration) (rand-pitch start))
-         (take 12))))
-
-(comment
-  (let
-    [key1 (linear 100)
-     key2 (linear (-> 100 (+ (* 30 (rand)))))
-     key3 (linear (-> 100 (+ (* 30 (rand)))))]
-    (->> (rand-phrase)
-       (where :pitch key1)
-       (with (->> (rand-phrase) (where :pitch key2) (after 1/2)))
-       (with (->> (rand-phrase) (where :pitch key3) (after 1)))
-       live/play))
-  )
-
-(comment
-  (let [offset1 1.13
-        offset2 0.93]
-    (->> linear
-       (with (->> linear
-                  (where :pitch (partial * offset1))
-                  (after 0.6)))
-       (with (->> linear
-                  (where :pitch (partial * offset2))
-                  (after 1.6)))
-       (live/play))))
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Species call       ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -427,8 +384,8 @@
          (where :pitch (linear root)))))
 
 (comment
-  (butcherbird-15)
   (live/play species-call)
+  (butcherbird-15)
 )
 
 
