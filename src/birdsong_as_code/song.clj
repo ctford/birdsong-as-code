@@ -376,6 +376,26 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Species call       ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def species-call
+  (->> (phrase
+         [1/8 1/8 1/4]               ; Durations
+         [18 18 16])                 ; Pitches
+       (where :pitch (linear 110)))) ; Put the pitches in the linear scale
+
+(comment
+  (live/play species-call)
+  (butcherbird-15)
+)
+
+
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Audio 24           ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -388,7 +408,7 @@
                  [    9     9     8]))
         a' (->> (phrase
                   [0.298 0.424 0.436]
-                  [   18    18    16]))
+                  (pitches species-call)))
         b' (->> (phrase
                   [0.063 0.238 0.393 0.794]
                   [   11    10    10    12]))]
@@ -401,7 +421,6 @@
        (with phrase-24)
        live/play)
 )
-
 
 (def transcription-24-logarithmic
   (let [a (phrase
@@ -435,55 +454,6 @@
        (map pow2)
        mean)
 )
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Audio 23           ;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(def transcription-23
-  (let [a (->> (phrase
-                 (repeat 1/2)
-                 [10 12 nil 11 7 10 14 nil 12]))
-        b (->> (phrase
-                 (repeat 1/2)
-                 [10 12 nil 11 7 10 14 nil 12]))
-        c (->> (phrase
-                 (repeat 1/2)
-                 [10 14 nil 12]))]
-    (->> a (then (after 2 b)) (then (after 2 c)))))
-
-(comment
-  (->> transcription-23
-       (where :pitch (linear 110))
-       live/play)
-  (butcherbird-23)
-)
-
-
-
-
-
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Species call       ;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(def species-call
-  (->> (phrase
-         [1/4 1/4 1/2]               ; Durations
-         [17 17 16])                 ; Pitches
-       (where :pitch (linear 110)))) ; Put the pitches in the linear scale
-
-(comment
-  (live/play species-call)
-  (butcherbird-15)
-)
-
-
-
-
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Keytar             ;;;
