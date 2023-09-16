@@ -111,6 +111,28 @@
 (def phrase-24
    [{:time 0 :duration 8 :bird 24 :part :butcherbird}])
 
+(def transcription-24-raw
+  (let [a (phrase
+            [0.256 0.187 0.185 0.956 0.595]
+            [ 1454  1303  1303  1559  1567])
+        b (phrase
+            [0.175 0.272 0.520]
+            [ 1111  1111  1043])
+        a' (phrase
+             [0.298 0.424 0.436]
+             [ 2348  2348  2093])
+        b' (phrase
+             [0.063 0.238 0.393 0.794]
+             [ 1432  1300  1300  1583])]
+    (->> (after 0.462 a) (then b) (then a') (then b'))))
+
+(comment
+  (->> transcription-24-raw
+       quiet
+       (with phrase-24)
+       live/play)
+)
+
 (definst hermit-thrush-02 []
   (let [buffer (load-sample "recordings/pnas.1406023111.sa02.wav")]
     (play-buf 1 buffer :action FREE :rate 1.0)))
@@ -129,6 +151,8 @@
   (/ (reduce + xs)  (count xs)))
 
 (defn pow2 [x] (* x x))
+
+(def pitches (partial map :pitch))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; BIRDSONG AS CODE   ;;;
@@ -355,13 +379,13 @@
 ;;; Audio 24           ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def transcription-24'
+(def transcription-24-linear
   (let [a (->> (phrase
                  [0.256 0.187 0.185 0.956 0.595]
                  [   11    10    10    12    12]))
         b (->> (phrase
                  [0.175 0.272 0.520]
-                 [  8.5   8.5     8]))
+                 [    9     9     8]))
         a' (->> (phrase
                   [0.298 0.424 0.436]
                   [   18    18    16]))
@@ -372,68 +396,45 @@
          (where :pitch (linear 130)))))
 
 (comment
-  (->> transcription-24'
+  (->> transcription-24-linear
        quiet
        (with phrase-24)
        live/play)
 )
 
-(def transcription-24-raw
+
+(def transcription-24-logarithmic
   (let [a (phrase
             [0.256 0.187 0.185 0.956 0.595]
-            [ 1454  1303  1303  1559  1567])
+            [   53    52    52    55    55])
         b (phrase
             [0.175 0.272 0.520]
-            [ 1111  1111  1043])
-        a' (phrase
-             [0.298 0.424 0.436]
-             [ 2348  2348  2093])
-        b' (phrase
-             [0.063 0.238 0.393 0.794]
-             [ 1432  1300  1300  1583])]
-    (->> (after 0.462 a) (then b) (then a') (then b'))))
-
-(comment
-  (->> transcription-24-raw
-       quiet
-       (with phrase-24)
-       live/play)
-)
-
-(def transcription-24-et
-  (let [a (phrase
-            [0.256 0.187 0.185 0.956 0.595]
-            [   54    52    52    55    55])
-        b (phrase
-            [0.175 0.272 0.520]
-            [   49    49    48])
+            [   50    50    48])
         a' (phrase
              [0.298 0.424 0.436]
              [   62    62    60])
         b' (phrase
              [0.063 0.238 0.393 0.794]
-             [   54    52    52    55])]
+             [   53    52    52    55])]
     (->> (after 0.462 a) (then b) (then a') (then b')
          (where :pitch (logarithmic 65)))))
 
 (comment
-  (->> transcription-24-et
+  (->> transcription-24-logarithmic
        quiet
        (with phrase-24)
        live/play)
 )
 
 (comment
-  (->> (map :pitch transcription-24-et)
-       (map - (map :pitch transcription-24') )
-       (map pow2)
-       mean)
-  (->> (map :pitch transcription-24-raw)
-       (map - (map :pitch transcription-24') )
+  (->> (map - (pitches transcription-24-logarithmic) (pitches transcription-24-raw))
        (map pow2)
        mean)
 
-  )
+  (->> (map - (pitches transcription-24-linear) (pitches transcription-24-raw))
+       (map pow2)
+       mean)
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Audio 23           ;;;
