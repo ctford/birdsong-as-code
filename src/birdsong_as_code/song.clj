@@ -78,8 +78,8 @@
         (* volume)
         (effects :pan pan :wet wet :room room :volume volume :high limit))))
 
-(defmethod live/play-note :default [{hertz :pitch seconds :duration}]
-  (when hertz (whistle hertz seconds)))
+(defmethod live/play-note :default [{hertz :pitch seconds :duration volume :velocity}]
+  (when hertz (whistle hertz seconds (or volume 1.0))))
 
 (definst butcherbird-15 []
   (let [buffer (load-sample "recordings/AUDIO 15.wav")]
@@ -368,25 +368,28 @@
 )
 
 (def transcription-24-raw
-  (let [a (->> (phrase
-                 [1/64  1/2  1/2  1/4 1/64 1/64    1  3/2]
-                 [1454 1303 1303 1559  nil  nil  nil 1302]))
-        b (->> (phrase
-                 [ 1/2  1/2    1]
-                 [1111 1111 1043]))
-        a' (->> (phrase
-                  [1/2 1/2  1]
-                  [2348 2348 2154]))
-        b' (->> (phrase
-                 [1/64  1/2  1/4  1/4  1/4 1/64 1/64]
-                 [ nil 1300 1300 1300 1593  nil  nil]))]
-    (->> a (then b) (then a') (then b'))))
+  (let [a (phrase
+            [0.256 0.187 0.185 0.956 0.595]
+            [ 1454  1303  1303  1559  1302])
+        b (phrase
+            [0.175 0.272 0.520]
+            [ 1111  1111  1043])
+        a' (phrase
+             [0.298 0.424 0.436]
+             [ 2348  2348  2154])
+        b' (phrase
+             [0.063 0.238 0.393 0.794]
+             [ 1432  1300  1300  1593])]
+    (->> (after 0.462 a) (then b) (then a') (then b'))))
 
+(def phrase-24
+   [{:time 0 :duration 8 :bird 24 :part :butcherbird}])
 
 (comment
-  (do
-    (->> transcription-24-raw live/play)
-    (butcherbird-24))
+  (->> transcription-24-raw
+       (all :velocity 0.4)
+       (with phrase-24)
+       live/play)
 )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
