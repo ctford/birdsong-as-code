@@ -164,7 +164,7 @@
 (comment
   (* 3/2 220)
   (+ 440 110)
-  (butcherbird-24)
+  (butcherbird-23)
 )
 
 
@@ -219,11 +219,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (comment
-  (butcherbird-24)
   (butcherbird-19)
   (hermit-thrush-02)
   (hermit-thrush-04)
 )
+
 
 
 
@@ -321,7 +321,6 @@
 (defn logarithmic [root]
   (let [twelfth-root (Math/pow 2 1/12)]
     (fn [n] (* root (Math/pow twelfth-root n)))))
-
 
 (def logarithmic-scale
   (->> (phrase
