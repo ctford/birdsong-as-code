@@ -293,9 +293,9 @@
 
 (def logarithmic-scale
   (->> (phrase
-         (repeat 1/2)
-         [12 14 16 17 19 21 23 24])
-       (where :pitch A-logarithmic)))
+         (repeat 1/2)                 ; Durations (all half a second)
+         [12 14 16 17 19 21 23 24])   ; Pitches
+       (where :pitch A-logarithmic))) ; Put the pitches in the logarithmic scale
 
 (comment
   (->> logarithmic-scale live/play)
@@ -305,15 +305,15 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn linear [root]
-  (fn [n] (-> n (* root))))
+  (fn [n] (* root n)))
 
 (def A-linear (linear (/ concert-A 4)))
 
 (def linear-scale
   (->> (phrase
-         (repeat 1/2)
-         [8 9 10 11 12 13 14 15 16])
-       (where :pitch A-linear)))
+         (repeat 1/2)                 ; Durations (all half a second)
+         [8 9 10 11 12 13 14 15 16])  ; Pitches
+       (where :pitch A-linear)))      ; Put the pitches in the linear scale
 
 (comment
   (->> linear-scale live/play)
