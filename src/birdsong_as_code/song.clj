@@ -405,10 +405,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (def species-call
-  (let [root 110]
-    (->> [17 17 16]
-         (phrase [1/4 1/4 1/2])
-         (where :pitch (linear root)))))
+  (->> (phrase
+         [1/4 1/4 1/2]               ; Durations
+         [17 17 16])                 ; Pitches
+       (where :pitch (linear 110)))) ; Put the pitches in the linear scale
 
 (comment
   (live/play species-call)
