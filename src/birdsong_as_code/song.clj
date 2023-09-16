@@ -298,19 +298,9 @@
          [12 14 16 17 19 21 23 24])
        (where :pitch A-logarithmic)))
 
-(def logarithmic-row-row
-  (->> (phrase
-         [3/6 3/6 2/6 1/6 3/6]
-         [12 12 12 14 16])
-       (where :pitch A-logarithmic)))
-
 (comment
   (->> logarithmic-scale live/play)
-  (->> logarithmic-row-row live/play)
 )
-
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Linear scale       ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -326,19 +316,9 @@
          [8 9 10 11 12 13 14 15 16])
        (where :pitch A-linear)))
 
-(def linear-row-row
-  (->> (phrase
-         [3/6 3/6 2/6 1/6 3/6]
-         [8 8 8 9 10])
-       (where :pitch A-linear)))
-
 (comment
   (->> linear-scale live/play)
-  (->> linear-row-row live/play)
 )
-
-
-
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -349,11 +329,11 @@
   (->> logarithmic-scale
        (with linear-scale)
        live/play)
-
-  (->> logarithmic-row-row
-       (with linear-row-row)
-       live/play)
 )
+
+
+
+
 
 
 
