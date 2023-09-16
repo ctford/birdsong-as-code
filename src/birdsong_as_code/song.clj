@@ -322,6 +322,7 @@
   (let [twelfth-root (Math/pow 2 1/12)]
     (fn [n] (* root (Math/pow twelfth-root n)))))
 
+
 (def logarithmic-scale
   (->> (phrase
          (repeat 1/2)                     ; Durations (all half a second)
@@ -364,13 +365,13 @@
        live/play)
 )
 
+(comment
+  ((logarithmic 100) 40)
+  ((logarithmic 100) 43)
 
-
-
-
-
-
-
+  ((linear 100) 10)
+  ((linear 100) 12)
+)
 
 
 
