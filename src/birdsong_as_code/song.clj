@@ -108,6 +108,9 @@
    23.3 butcherbird-23-transposed
    24   butcherbird-24})
 
+(def phrase-24
+   [{:time 0 :duration 8 :bird 24 :part :butcherbird}])
+
 (definst hermit-thrush-02 []
   (let [buffer (load-sample "recordings/pnas.1406023111.sa02.wav")]
     (play-buf 1 buffer :action FREE :rate 1.0)))
@@ -119,6 +122,8 @@
 (def hermit-thrushes
   {02 hermit-thrush-02
    04 hermit-thrush-04})
+
+(def quiet (partial all :velocity 0.5))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; BIRDSONG AS CODE   ;;;
@@ -382,12 +387,9 @@
              [ 1432  1300  1300  1593])]
     (->> (after 0.462 a) (then b) (then a') (then b'))))
 
-(def phrase-24
-   [{:time 0 :duration 8 :bird 24 :part :butcherbird}])
-
 (comment
   (->> transcription-24-raw
-       (all :velocity 0.4)
+       quiet
        (with phrase-24)
        live/play)
 )
