@@ -428,18 +428,18 @@
 (def transcription-24-logarithmic
   (let [a (phrase
             [0.256 0.187 0.185 0.956 0.595]
-            [   53    52    52    55    55])
+            [   41    40    40    43    43])
         b (phrase
             [0.175 0.272 0.520]
-            [   50    50    48])
+            [   38    38    36])
         a' (phrase
              [0.298 0.424 0.436]
-             [   62    62    60])
+             [   50    50    48])
         b' (phrase
              [0.063 0.238 0.393 0.794]
-             [   53    52    52    55])]
+             [   41    40    40    43])]
     (->> (after 0.462 a) (then b) (then a') (then b')
-         (where :pitch (logarithmic 65)))))
+         (where :pitch (logarithmic 130)))))
 
 (comment
   (->> (quiet transcription-24-logarithmic)
