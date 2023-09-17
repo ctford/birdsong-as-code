@@ -325,7 +325,7 @@
 (def logarithmic-scale
   (->> (phrase
          (repeat 1/2)                     ; Durations (all half a second)
-         [12 14 16 17 19 21 23 24])       ; Pitches
+         [12 14 16 17 19 21 22 23 24])       ; Pitches
        (where :pitch (logarithmic 440)))) ; Put pitches in the logarithmic scale
 
 (comment
