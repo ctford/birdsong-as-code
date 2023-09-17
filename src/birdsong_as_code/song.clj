@@ -435,6 +435,14 @@
        live/play)
 )
 
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Comparison by numbers ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (comment
   (mean-difference-squared
     (pitches transcription-24-raw)
@@ -444,6 +452,8 @@
     (pitches transcription-24-raw)
     (pitches transcription-24-linear))
 )
+
+
 
 
 
