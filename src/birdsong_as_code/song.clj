@@ -526,14 +526,16 @@
    {:time 16 :duration 8 :bird 19 :part :butcherbird}])
 
 (def drumloop
-  (->> (rhythm
-         (cycle [1/2 1/2 1/2 1/4 1/4 ]))
-    (having :drum (cycle [:kick :tick :tick :tock :kick]))
-    (all :part :beat)
-    (take-while #(-> % :time (< 24)))
-    (tempo (bpm 90))))
+  (->> (rhythm (cycle [1/1 1/1 1/1 1/2 1/2 ]))
+       (having :drum (cycle [:kick :tick :tick :tock :kick]))
+       (take-while #(-> % :time (< 24)))
+       (then
+         (->> (rhythm (repeat 8 1))
+              (having :drum (repeat :kick))))
+       (all :part :beat)
+       (tempo (bpm 90))))
 
-(def jamloop (with (times 2 drumloop) birdloop))
+(def jamloop (with drumloop birdloop))
 
 (comment
   (live/jam (var jamloop))
