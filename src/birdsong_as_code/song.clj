@@ -365,11 +365,11 @@
 )
 
 (comment
-  ((logarithmic 100) 40)
-  ((logarithmic 100) 43)
+  (let [scale (logarithmic 100)]
+    (/ (scale 4) (scale 0)))    ; Approximately 5/4
 
-  ((linear 100) 10)
-  ((linear 100) 12)
+  (let [scale (linear 100)]
+    (/ (scale 10) (scale 8)))   ; Exactly 5/4
 )
 
 
