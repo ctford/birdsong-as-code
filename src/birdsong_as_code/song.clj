@@ -308,7 +308,7 @@
         (* envelope 2/5 volume))))
 
 (comment
-  (beep)
+  (beep 500)
   (do
     (boop 300)
     (boop 500))
