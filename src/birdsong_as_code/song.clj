@@ -186,9 +186,9 @@
     (map (fn [n] (repeat n n)))
     (reduce concat)))
 
-
-
-
+(comment
+  (= raw computed)
+)
 
 
 
