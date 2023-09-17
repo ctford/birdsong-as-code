@@ -420,8 +420,7 @@
          (where :pitch (linear 130)))))
 
 (comment
-  (->> transcription-24-linear
-       quiet
+  (->> (quiet transcription-24-linear)
        (with phrase-24)
        live/play)
 )
@@ -443,8 +442,7 @@
          (where :pitch (logarithmic 65)))))
 
 (comment
-  (->> transcription-24-logarithmic
-       quiet
+  (->> (quiet transcription-24-logarithmic)
        (with phrase-24)
        live/play)
 )
@@ -458,6 +456,8 @@
     (pitches transcription-24-raw)
     (pitches transcription-24-linear))
 )
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Keytar             ;;;
