@@ -299,9 +299,9 @@
 
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Harmonics          ;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Real sounds have harmonics ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (definst boop [frequency 440 volume 1.0]
   (let [envelope (env-gen (perc 0.3 0.9) :action FREE)]
