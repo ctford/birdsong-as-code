@@ -404,20 +404,14 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (def transcription-24-linear
-  (let [a (->> (phrase
-                 [0.256 0.187 0.185 0.956 0.595]
-                 [   11    10    10    12    12]))
-        b (->> (phrase
-                 [0.175 0.272 0.520]
-                 [    9     9     8]))
-        a' (->> (phrase
-                  [0.298 0.424 0.436]
-                  (pitches species-call)))
-        b' (->> (phrase
-                  [0.063 0.238 0.393 0.794]
-                  [   11    10    10    12]))]
-    (->> (after 0.462 a) (then b) (then a') (then b')
-         (where :pitch (linear 130)))))
+  (->> transcription-24-raw
+       (having :pitch
+               (concat
+                 [11 10 10 12]
+                 [12 9 9 8]
+                 (pitches species-call)
+                 [11 10 10 12]))
+       (where :pitch (linear 130))))
 
 (comment
   (->> (quiet transcription-24-linear)
@@ -426,20 +420,14 @@
 )
 
 (def transcription-24-logarithmic
-  (let [a (phrase
-            [0.256 0.187 0.185 0.956 0.595]
-            [   41    40    40    43    43])
-        b (phrase
-            [0.175 0.272 0.520]
-            [   38    38    36])
-        a' (phrase
-             [0.298 0.424 0.436]
-             [   50    50    48])
-        b' (phrase
-             [0.063 0.238 0.393 0.794]
-             [   41    40    40    43])]
-    (->> (after 0.462 a) (then b) (then a') (then b')
-         (where :pitch (logarithmic 130)))))
+  (->> transcription-24-raw
+       (having :pitch
+               (concat
+                 [41 40 40 43]
+                 [43 38 38 36]
+                 [50 50 48]
+                 [41 40 40 43]  ))
+       (where :pitch (logarithmic 130))))
 
 (comment
   (->> (quiet transcription-24-logarithmic)
@@ -456,6 +444,8 @@
     (pitches transcription-24-raw)
     (pitches transcription-24-linear))
 )
+
+
 
 
 
