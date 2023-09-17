@@ -527,8 +527,15 @@
    {:time 16 :duration 8 :bird 19 :part :butcherbird}])
 
 (def drumloop
-  (->> (rhythm (cycle [1/1 1/1 1/1 1/2 1/2 ]))
-       (having :drum (cycle [:kick :tick :tick :tock :kick]))
+  (->> (rhythm (cycle [1/1 1/1 1/1 1/3 2/3
+                       1/1 1/1 1/3 1/3 1/6 1/6 1/3 2/3
+                       1/1 5/6 1/6 1/1 1/3 2/3
+                       1/1 1/1 1/6 1/6 1/6 1/6 1/6 1/6 1/6 1/6 2/3]))
+       (having :drum
+               (cycle [:kick :tick :tick :tock :kick
+                       :kick :tick :tick :tick :tick :tick :tock :kick
+                       :kick :tick :tick :tick :tock :kick
+                       :kick :tick :kick :tick :kick :tick :tick :tick :tock :tick :kick]))
        (take-while #(-> % :time (< 24)))
        (then
          (->> (rhythm (repeat 8 1))
