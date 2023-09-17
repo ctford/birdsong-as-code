@@ -81,25 +81,25 @@
 (defmethod live/play-note :default [{hertz :pitch seconds :duration volume :velocity}]
   (when hertz (whistle hertz seconds (or volume 1.0))))
 
-(definst butcherbird-15 []
+(definst butcherbird-15 [pan 0.0]
   (let [buffer (load-sample "recordings/AUDIO 15.wav")]
-    (play-buf 1 buffer :action FREE :rate 1.0)))
+    (pan2 (play-buf 1 buffer :action FREE :rate 1.0) pan)))
 
-(definst butcherbird-19 []
+(definst butcherbird-19 [pan 0.0]
   (let [buffer (load-sample "recordings/AUDIO 19.wav")]
-    (play-buf 1 buffer :action FREE :rate 1.0)))
+    (pan2 (play-buf 1 buffer :action FREE :rate 1.0) pan)))
 
-(definst butcherbird-23 []
+(definst butcherbird-23 [pan 0.0]
   (let [buffer (load-sample "recordings/AUDIO 23.wav")]
-    (play-buf 1 buffer :action FREE :rate 1.0)))
+    (pan2 (play-buf 1 buffer :action FREE :rate 1.0) pan)))
 
-(definst butcherbird-24 []
+(definst butcherbird-24 [pan 0.0]
   (let [buffer (load-sample "recordings/AUDIO 24.wav")]
-    (play-buf 1 buffer :action FREE :rate 1.0)))
+    (pan2 (play-buf 1 buffer :action FREE :rate 1.0) pan)))
 
-(definst butcherbird-23-transposed []
+(definst butcherbird-23-transposed [pan 0.0]
   (let [buffer (load-sample "recordings/AUDIO 23.wav")]
-    (play-buf 1 buffer :action FREE :rate 132/110)))
+    (pan2 (play-buf 1 buffer :action FREE :rate 132/110) pan)))
 
 (def butcherbirds
   {15   butcherbird-15
@@ -109,7 +109,7 @@
    24   butcherbird-24})
 
 (def phrase-24
-   [{:time 0 :duration 8 :bird 24 :part :butcherbird}])
+   [{:time 0 :duration 8 :bird 24 :part :butcherbird :pan 0}])
 
 (def transcription-24-raw
   (let [a (phrase
@@ -518,13 +518,13 @@
 (defmethod live/play-note :beat [{drum :drum}]
     ((kit drum)))
 
-(defmethod live/play-note :butcherbird [{n :bird seconds :duration}]
-  ((butcherbirds n)))
+(defmethod live/play-note :butcherbird [{n :bird seconds :duration pan :pan}]
+  ((butcherbirds n) pan))
 
 (def birdloop
-  [{:time 0 :duration 8 :bird 23 :part :butcherbird}
-   {:time 0 :duration 8 :bird 24 :part :butcherbird}
-   {:time 16 :duration 8 :bird 19 :part :butcherbird}])
+  [{:time 0  :duration 8 :bird 24 :part :butcherbird :pan 0}
+   {:time 4  :duration 8 :bird 23 :part :butcherbird :pan -0.5}
+   {:time 12 :duration 8 :bird 19 :part :butcherbird :pan 0.5}])
 
 (def drumloop
   (->> (rhythm (cycle [1/1 1/1 1/1 1/3 2/3
@@ -538,8 +538,9 @@
                        :kick :tick :kick :tick :kick :tick :tick :tick :tock :tick :kick]))
        (take-while #(-> % :time (< 24)))
        (then
-         (->> (rhythm (repeat 8 1))
-              (having :drum (repeat :kick))))
+         (->> (rhythm [1 1 1 1 2/3 1/3 2/3 1/3 2/3 1/3 2/3 1/3])
+              (having :drum [:kick :kick :kick :kick
+                             :kick :tick :kick :tick :kick :tick :kick :tock])))
        (all :part :beat)
        (tempo (bpm 90))))
 
