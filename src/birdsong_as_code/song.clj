@@ -37,17 +37,17 @@
   (:default :ar))
 
 
-(definst corgan [freq 440 dur 10.0 depth 1 walk 1 attack 0.01 under-attack 0.3 vol 1.0 pan 0.0 wet 0.5 room 0.5 vibrato 3 limit 99999 gate 1.0]
+(definst corgan [freq 440 dur 10.0 depth 1 walk 1 attack 0.01 under-attack 0.3 vol 1.0 pan 0.0 wet 0.4 room 0.7 vibrato 3 limit 99999 gate 1.0]
   (->
     (saw freq)
     (* (env-gen (perc 0.01 dur)))
     (rlpf (mul-add (sin-osc vibrato) (line:kr 0 200 dur) (* freq 4)) 0.3)
     (* vol 4)
-    (clip2 0.2)
+    (clip2 0.4)
     (+ (* 1/3 (sin-osc freq) (env-gen (perc under-attack dur))))
     (+ (* (lpf (* 1 (brown-noise)) 500) (env-gen (perc 0.01 0.2))))
-    (* (env-gen (adsr attack 0.05 1) (* gate (line:kr 1.0 0.0 dur))))
-    (+ (* 2 (sin-osc freq) (env-gen (perc 0.01 0.1))))
+    (* (env-gen (adsr attack 0.03 1 0.1) (* gate (line:kr 1.0 0.0 dur))))
+    (+ (lpf (* 2 (square freq) (env-gen (perc 0.01 0.2))) 1500))
     (rlpf (* walk resonance) 0.1)
     (* vol 3)
     (effects :pan pan :wet wet :room room :volume vol :high limit)))
@@ -481,12 +481,13 @@
 
 
 (defn midi->hfreq [midi]
-  (let [c1-midi 24
+  (let [c0-midi 12
+        c0-freq 18.86
+        c1-midi 24
         c1-freq 37.71
         c2-midi 36
         c2-freq 65.41]
-    ;(some-> midi (- c2-midi) midi->linear (* c2-freq))
-    (some-> midi (- c1-midi) midi->linear (* c1-freq))
+    (some-> midi (- c0-midi) midi->linear (* c0-freq))
 ))
 
 (def midi->freq midi->hfreq)
@@ -499,7 +500,7 @@
 (def keytar-note-on
   (on-event [:midi :note-on]
             (fn [{note :note velocity :velocity}]
-              (let [unit-volume (+ 1/4 (* 3/4 (/ velocity 128)))
+              (let [unit-volume (+ 1/2 (* 1/2 (/ velocity 128)))
                     synth (some-> note midi->freq (/ 2) (keytar-instrument :dur 15 :vol (/ velocity 128)))]
                 (swap! notes-in-progress assoc note synth)))
             ::midi-note-on))
