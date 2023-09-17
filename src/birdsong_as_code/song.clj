@@ -154,6 +154,11 @@
 
 (def pitches (partial map :pitch))
 
+(defn mean-difference-squared [xs ys]
+    (->> (map - xs ys)
+         (map pow2)
+         mean))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; BIRDSONG AS CODE                           ;;;
 ;;;                                            ;;;
@@ -445,13 +450,13 @@
 )
 
 (comment
-  (->> (map - (pitches transcription-24-logarithmic) (pitches transcription-24-raw))
-       (map pow2)
-       mean)
+  (mean-difference-squared
+    (pitches transcription-24-raw)
+    (pitches transcription-24-logarithmic))
 
-  (->> (map - (pitches transcription-24-linear) (pitches transcription-24-raw))
-       (map pow2)
-       mean)
+  (mean-difference-squared
+    (pitches transcription-24-raw)
+    (pitches transcription-24-linear))
 )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
