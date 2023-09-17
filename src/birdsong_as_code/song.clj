@@ -205,7 +205,7 @@
 (def source1
   {:title    "Is Birdsong Music?"
    :type     :book,
-   :author   "Hollis Taylor"
+   :authors ["Hollis Taylor"]
    :bird     "Pied Butcherbird"})
 
 (def source2
