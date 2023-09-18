@@ -49,7 +49,7 @@
     (* (env-gen (adsr attack 0.03 1 0.1) (* gate (line:kr 1.0 0.0 dur))))
     (+ (lpf (* 2 (square freq) (env-gen (perc 0.01 0.2))) 1500))
     (rlpf (* walk resonance) 0.1)
-    (* vol 3)
+    (* vol)
     (effects :pan pan :wet wet :room room :volume vol :high limit)))
 
 (definst blorp [freq 440 dur 1.0 depth 1 walk 1 attack 0.01 under-attack 0.3 vol 1.0 pan 0.0 wet 0.5 room 0.5 vibrato 3 limit 99999 gate 1.0]
@@ -331,7 +331,7 @@
   (->> (phrase
          (repeat 1/2)                     ; Durations (all half a second)
          [12 14 16 17 19 21 22 23 24])       ; Pitches
-       (where :pitch (logarithmic 440)))) ; Put pitches in the logarithmic scale
+       (where :pitch (logarithmic 400)))) ; Put pitches in the logarithmic scale
 
 (comment
   (->> logarithmic-scale live/play)
@@ -350,7 +350,7 @@
   (->> (phrase
          (repeat 1/2)                ; Durations (all half a second)
          [8 9 10 11 12 13 14 15 16]) ; Pitches
-       (where :pitch (linear 110)))) ; Put pitches in the linear scale
+       (where :pitch (linear 100)))) ; Put pitches in the linear scale
 
 (comment
   (->> linear-scale live/play)
@@ -389,7 +389,7 @@
          [ 18  18  16]))) ; Pitches
 
 (comment
-  (->> species-call (where :pitch (linear 110)) live/play)
+  (->> species-call (where :pitch (linear 100)) live/play)
   (butcherbird-15)
 )
 
