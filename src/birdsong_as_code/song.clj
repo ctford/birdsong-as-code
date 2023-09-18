@@ -159,6 +159,8 @@
          (map pow2)
          mean))
 
+(def keytar-linear? true)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; BIRDSONG AS CODE                           ;;;
 ;;;                                            ;;;
@@ -377,7 +379,7 @@
     (/ (scale 10) (scale 8)))   ; Exactly 5/4
 )
 
-
+(def keytar-linear? true)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Species call       ;;;
@@ -490,8 +492,10 @@
     (some-> midi (- c0-midi) midi->linear (* c0-freq))
 ))
 
-(def midi->freq midi->linear-freq)
-;(def midi->freq midi->hz)
+(def midi->freq
+  (if keytar-linear?
+    midi->linear-freq
+    midi->hz))
 
 (def keytar-instrument corgan #_blorp)
 
