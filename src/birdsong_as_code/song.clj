@@ -480,7 +480,7 @@
 
 
 
-(defn midi->hfreq [midi]
+(defn midi->linear-freq [midi]
   (let [c0-midi 12
         c0-freq 18.86
         c1-midi 24
@@ -490,7 +490,7 @@
     (some-> midi (- c0-midi) midi->linear (* c0-freq))
 ))
 
-(def midi->freq midi->hfreq)
+(def midi->freq midi->linear-freq)
 ;(def midi->freq midi->hz)
 
 (def keytar-instrument corgan #_blorp)
