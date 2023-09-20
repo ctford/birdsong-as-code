@@ -133,6 +133,11 @@
        live/play)
 )
 
+; Extra def to resolve dependencies
+(defn logarithmic' [fundamental]
+  (let [twelfth-root (Math/pow 2 1/12)]
+    (fn [n] (* fundamental (Math/pow twelfth-root n)))))
+
 (def transcription-24-logarithmic
   (->> transcription-24-raw
        (having :pitch
@@ -141,7 +146,7 @@
                  [43 38 38 36]
                  [50 50 48   ]
                  [41 40 40 43]))
-       (where :pitch (logarithmic 130))))
+       (where :pitch (logarithmic' 130))))
 
 (comment
   (->> (quiet transcription-24-logarithmic)
