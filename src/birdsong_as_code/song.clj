@@ -210,15 +210,15 @@
 )
 
 (def source1
-  {:title    "Is Birdsong Music?"
+  {:title    "Is Birdsong Music?",
    :type     :book,
-   :authors ["Hollis Taylor"]
+   :authors ["Hollis Taylor"],
    :bird     "Pied Butcherbird"})
 
 (def source2
   {:title    "Overtone-based pitch selection in hermit thrush song",
    :type     :article,
-   :authors ["Doolittle", "Gingras", "Endres", "Fitch"]
+   :authors ["Doolittle", "Gingras", "Endres", "Fitch"],
    :bird     "Hermit Thrush"})
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
