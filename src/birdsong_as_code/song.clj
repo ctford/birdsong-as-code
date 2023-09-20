@@ -133,6 +133,22 @@
        live/play)
 )
 
+(def transcription-24-logarithmic
+  (->> transcription-24-raw
+       (having :pitch
+               (concat
+                 [41 40 40 43]
+                 [43 38 38 36]
+                 [50 50 48   ]
+                 [41 40 40 43]))
+       (where :pitch (logarithmic 130))))
+
+(comment
+  (->> (quiet transcription-24-logarithmic)
+       (with phrase-24)
+       live/play)
+)
+
 (definst hermit-thrush-02 []
   (let [buffer (load-sample "recordings/pnas.1406023111.sa02.wav")]
     (play-buf 1 buffer :action FREE :rate 1.0)))
@@ -440,26 +456,6 @@
        (with phrase-24)
        live/play)
 )
-
-(def transcription-24-logarithmic
-  (->> transcription-24-raw
-       (having :pitch
-               (concat
-                 [41 40 40 43]
-                 [43 38 38 36]
-                 [50 50 48   ]
-                 [41 40 40 43]))
-       (where :pitch (logarithmic 130))))
-
-(comment
-  (->> (quiet transcription-24-logarithmic)
-       (with phrase-24)
-       live/play)
-)
-
-
-
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Comparison by numbers ;;;
