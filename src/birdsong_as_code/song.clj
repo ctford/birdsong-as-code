@@ -325,9 +325,9 @@
 ;;; Logarithmic scale  ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn logarithmic [root]
+(defn logarithmic [fundamental]
   (let [twelfth-root (Math/pow 2 1/12)]
-    (fn [n] (* root (Math/pow twelfth-root n)))))
+    (fn [n] (* fundamental (Math/pow twelfth-root n)))))
 
 (def logarithmic-scale
   (->> (phrase
@@ -345,8 +345,8 @@
 ;;; Linear scale       ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn linear [root]
-  (fn [n] (* root n)))
+(defn linear [fundamental]
+  (fn [n] (* fundamental n)))
 
 (def linear-scale
   (->> (phrase
