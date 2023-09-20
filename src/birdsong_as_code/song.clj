@@ -382,6 +382,26 @@
 (def keytar-linear? true)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Octave equivalence ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def row-row-row-your-boat
+  (phrase
+    [3/3 3/3 2/3 1/3 3/3]   ; Durations
+    [ 36  36  36  38  40])) ; Pitches
+
+(comment
+  (->> row-row-row-your-boat
+       (where :pitch (logarithmic 100))
+       live/play)
+
+(->> row-row-row-your-boat
+       (where :pitch #(+ 12 %)) ; Raise pitch an octave
+       (where :pitch (logarithmic 100))
+       live/play)
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Species call       ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
