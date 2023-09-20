@@ -410,7 +410,7 @@
        (having :pitch
                (concat
                  [11 10 10 12]
-                 [12 9 9 8]
+                 [12  9  9  8]
                  (pitches species-call)
                  [11 10 10 12]))
        (where :pitch (linear 130))))
@@ -427,8 +427,8 @@
                (concat
                  [41 40 40 43]
                  [43 38 38 36]
-                 [50 50 48]
-                 [41 40 40 43]  ))
+                 [50 50 48   ]
+                 [41 40 40 43]))
        (where :pitch (logarithmic 130))))
 
 (comment
