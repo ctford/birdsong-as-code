@@ -408,7 +408,7 @@
 
 (def row-row-row-your-boat
   (phrase
-    [3/3 3/3 2/3 1/3 3/3]   ; Durations
+    [3/6 3/6 2/6 1/6 3/6]   ; Durations
     [ 36  36  36  38  40])) ; Pitches
 
 (comment
@@ -416,7 +416,7 @@
        (where :pitch (logarithmic 100))
        live/play)
 
-(->> row-row-row-your-boat
+  (->> row-row-row-your-boat
        (where :pitch #(+ 12 %)) ; Raise pitch an octave
        (where :pitch (logarithmic 100))
        live/play)
