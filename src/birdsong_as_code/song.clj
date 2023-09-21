@@ -406,21 +406,21 @@
 ;;; Octave equivalence         ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def row-row-row-your-boat
+(def row-row
   (phrase
     [3/6 3/6 2/6 1/6 3/6]   ; Durations
     [ 36  36  36  38  40])) ; Pitches
 
 (comment
-  (->> row-row-row-your-boat
-       (where :pitch (logarithmic 100))
-       live/play)
-
-  (->> row-row-row-your-boat
-       (where :pitch #(+ 12 %)) ; Raise pitch an octave
+  (->> row-row
+       ;(then (->> row-row (where :pitch #(+ 12 %))))
        (where :pitch (logarithmic 100))
        live/play)
 )
+
+
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Species call                ;;;
