@@ -432,12 +432,12 @@
          [ 18  18  16]))) ; Pitches
 
 (comment
-  (->> species-call (where :pitch (linear 100)) live/play)
+  (->> species-call
+       (where :pitch (linear 100))
+       live/play)
+
   (butcherbird-15)
 )
-
-
-
 
 
 
