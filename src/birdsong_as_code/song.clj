@@ -134,11 +134,11 @@
 )
 
 ; Extra def to resolve dependencies
-(defn logarithmic' [fundamental]
+(defn exponential' [fundamental]
   (let [twelfth-root (Math/pow 2 1/12)]
     (fn [n] (* fundamental (Math/pow twelfth-root n)))))
 
-(def transcription-24-logarithmic
+(def transcription-24-exponential
   (->> transcription-24-raw
        (having :pitch
                (concat
@@ -146,10 +146,10 @@
                  [43 38 38 36]
                  [50 50 48   ]
                  [41 40 40 43]))
-       (where :pitch (logarithmic' 130))))
+       (where :pitch (exponential' 130))))
 
 (comment
-  (->> (quiet transcription-24-logarithmic)
+  (->> (quiet transcription-24-exponential)
        (with phrase-24)
        live/play)
 )
@@ -343,21 +343,21 @@
 )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Logarithmic scale           ;;;
+;;; Exponential scale           ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn logarithmic [fundamental]
+(defn exponential [fundamental]
   (let [twelfth-root (Math/pow 2 1/12)]
     (fn [n] (* fundamental (Math/pow twelfth-root n)))))
 
-(def logarithmic-scale
+(def exponential-scale
   (->> (phrase
          (repeat 1/2)                     ; Durations (all half a second)
          [12 14 16 17 19 21 22 23 24])    ; Pitches
-       (where :pitch (logarithmic 400)))) ; Put pitches in the logarithmic scale
+       (where :pitch (exponential 400)))) ; Put pitches in the exponential scale
 
 (comment
-  (->> logarithmic-scale live/play)
+  (->> exponential-scale live/play)
 )
 
 
@@ -387,13 +387,13 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (comment
-  (->> logarithmic-scale
+  (->> exponential-scale
        (with linear-scale)
        live/play)
 )
 
 (comment
-  (let [scale (logarithmic 100)]
+  (let [scale (exponential 100)]
     (/ (scale 4) (scale 0)))    ; Approximately 5/4
 
   (let [scale (linear 100)]
@@ -414,7 +414,7 @@
 (comment
   (->> row-row
        ;(then (->> row-row (where :pitch #(+ 12 %))))
-       (where :pitch (logarithmic 100))
+       (where :pitch (exponential 100))
        live/play)
 )
 
@@ -469,7 +469,7 @@
 (comment
   (mean-difference-squared
     (pitches transcription-24-raw)
-    (pitches transcription-24-logarithmic))
+    (pitches transcription-24-exponential))
 
   (mean-difference-squared
     (pitches transcription-24-raw)
