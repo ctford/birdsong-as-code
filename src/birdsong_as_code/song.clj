@@ -343,7 +343,7 @@
 )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Exponential scale           ;;;
+;;; Exponential scale (human)   ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn exponential [fundamental]
@@ -363,7 +363,7 @@
 ;(def keytar-linear? false)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Linear scale               ;;;
+;;; Linear scale (bird)        ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn linear [fundamental]
