@@ -413,7 +413,7 @@
 
 (comment
   (->> row-row
-       ;(then (->> row-row (where :pitch #(+ 12 %))))
+       (then (->> row-row (where :pitch #(+ 12 %))))
        (where :pitch (exponential 100))
        live/play)
 )
