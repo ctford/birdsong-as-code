@@ -457,8 +457,8 @@
        (where :pitch (linear 130))))
 
 (comment
-  (->> (quiet transcription-24-linear)
-       (with phrase-24)
+  (->> phrase-24
+       ;(with (quiet transcription-24-linear))
        live/play)
 )
 
