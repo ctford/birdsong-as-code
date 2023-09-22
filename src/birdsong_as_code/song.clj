@@ -433,7 +433,7 @@
 
 (comment
   (->> species-call
-       (where :pitch (linear 100))
+       (where :pitch (linear 130))
        live/play)
 
   (butcherbird-15)
@@ -505,11 +505,7 @@
 
 (defn midi->linear-freq [midi]
   (let [c0-midi 12
-        c0-freq 18.86
-        c1-midi 24
-        c1-freq 37.71
-        c2-midi 36
-        c2-freq 65.41]
+        c0-freq 65/4]
     (some-> midi (- c0-midi) midi->linear (* c0-freq))
 ))
 
@@ -547,9 +543,11 @@
   ((butcherbirds n) pan))
 
 (def birdloop
-  [{:time 0  :duration 8 :bird 24 :part :butcherbird :pan 0}
-   {:time 4  :duration 8 :bird 23 :part :butcherbird :pan -0.5}
-   {:time 12 :duration 8 :bird 19 :part :butcherbird :pan 0.5}])
+  (with
+    (with phrase-24 (quiet transcription-24-linear))
+    (after (* 2/3 16) (with phrase-24 (quiet transcription-24-linear)))
+    [{:time 4  :duration 8 :bird 23 :part :butcherbird :pan -0.5}
+     {:time 12 :duration 8 :bird 19 :part :butcherbird :pan 0.5}]))
 
 (def drumloop
   (->> (rhythm (cycle [1/1 1/1 1/1 1/3 2/3
