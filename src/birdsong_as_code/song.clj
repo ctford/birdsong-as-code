@@ -395,12 +395,12 @@
 (comment
   (let [scale (exponential 100)]
     (/ (scale 4) (scale 0)))    ; Approximately 5/4
-
-  (let [scale (linear 100)]
-    (/ (scale 10) (scale 8)))   ; Exactly 5/4
 )
 
 ;(def keytar-linear? false)
+
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Octave equivalence         ;;;
