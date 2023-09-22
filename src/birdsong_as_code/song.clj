@@ -360,7 +360,7 @@
   (->> exponential-scale live/play)
 )
 
-
+;(def keytar-linear? false)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Linear scale               ;;;
@@ -400,7 +400,7 @@
     (/ (scale 10) (scale 8)))   ; Exactly 5/4
 )
 
-(def keytar-linear? true)
+;(def keytar-linear? false)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Octave equivalence         ;;;
