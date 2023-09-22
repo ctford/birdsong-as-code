@@ -522,7 +522,7 @@
 (def keytar-note-on
   (on-event [:midi :note-on]
             (fn [{note :note velocity :velocity}]
-              (let [unit-volume (+ 1/2 (* 1/2 (/ velocity 128)))
+              (let [unit-volume (+ 0.6 (* 0.3 (/ velocity 128)))
                     synth (some-> note midi->freq (/ 2) (keytar-instrument :dur 15 :vol (/ velocity 128)))]
                 (swap! notes-in-progress assoc note synth)))
             ::midi-note-on))
