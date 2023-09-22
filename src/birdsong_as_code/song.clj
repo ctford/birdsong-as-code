@@ -327,7 +327,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (definst boop [frequency 440 volume 1.0]
-  (let [envelope (env-gen (perc 0.3 0.9) :action FREE)]
+  (let [envelope (env-gen (perc 0.03 0.9) :action FREE)]
     (-> (+ (* 1/1 (sin-osc (* 1 frequency))))
         (+ (* 1/2 (sin-osc (* 2 frequency))))
         (+ (* 1/3 (sin-osc (* 3 frequency))))
