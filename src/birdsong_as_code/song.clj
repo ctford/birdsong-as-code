@@ -183,10 +183,9 @@
 (def keytar-linear? true)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; BIRDSONG AS CODE                           ;;;
+;;; THE BUTCHERBIRD COMBINATOR                 ;;;
 ;;;                                            ;;;
 ;;; Chris Ford                                 ;;;
-;;; https://github.com/ctford/birdsong-as-code ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (comment
@@ -194,6 +193,7 @@
   (+ 440 110)
   (butcherbird-23)
 )
+
 
 
 
