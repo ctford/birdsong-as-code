@@ -519,17 +519,22 @@
 
 (defonce sustain-on (atom false))
 (defonce notes-in-progress (atom {}))
+(defonce notes-in-sustain (atom {}))
 
-(defn kill-note [note]
-  (let [node (@notes-in-progress note)]
+(defn kill-note [note collection]
+  (let [node (collection note)]
     (when (node-live? node)
       (ctl node :gate 0))))
 
-(defn kill-all-notes []
-  (doseq [[note _] @notes-in-progress]
-    (kill-note note)))
+(defn kill-notes-in [collection]
+  (doseq [[note _] collection]
+    (kill-note note collection)))
 
-(def keytar-sustain-on
+(defn kill-all-notes []
+  (kill-notes-in @notes-in-progress)
+  (kill-notes-in @notes-in-sustain))
+
+(def keytar-sustain
   (on-event [:midi :control-change]
             (fn [{:keys [note data2]}]
               (case note
@@ -543,15 +548,20 @@
             (fn [{note :note velocity :velocity}]
               (let [unit-volume (+ 0.6 (* 0.3 (/ velocity 128)))
                     synth (some-> note midi->freq (/ 2) (keytar-instrument :dur 15 :vol (/ velocity 128)))]
-                (kill-note note)
+                (kill-note note @notes-in-progress)
                 (swap! notes-in-progress assoc note synth)))
             ::midi-note-on))
 
 (def keytar-note-off
   (on-event [:midi :note-off]
-           (fn [{note :note}]
-             (if (not @sustain-on) (kill-note note)))
-           ::midi-note-off))
+            (fn [{note :note}]
+              (if (not @sustain-on)
+                (kill-note note @notes-in-progress)
+                (do
+                  (kill-note note notes-in-sustain)
+                  (swap! notes-in-sustain assoc note (@notes-in-progress note))
+                  (swap! notes-in-progress dissoc note))))
+            ::midi-note-off))
 
 (def kit {:kick #(drums/kick2 66)
           :tick #(drums/closed-hat :t 0.01 :hi 20),
