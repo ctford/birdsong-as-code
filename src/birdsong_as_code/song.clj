@@ -45,7 +45,7 @@
     (* vol 4)
     (clip2 0.7)
     (+ (* 1/3 (sin-osc freq) (env-gen (perc under-attack dur))))
-    (+ (* (lpf (* 1/4 (white-noise)) resonance) (env-gen (perc 0.1 0.2))))
+    (+ (* (lpf (* 0.1 (white-noise)) resonance) (env-gen (perc 0.1 0.2))))
     (* (env-gen (adsr attack 0.2 0.4 0.3) (* gate (line:kr 1.0 0.0 dur))))
     (rlpf (* walk resonance) 0.1)
     (+ (lpf (* 2 (square freq) (env-gen (perc 0.01 0.2))) 1500))
