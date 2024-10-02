@@ -517,20 +517,40 @@
 
 (def keytar-instrument corgan #_blorp)
 
+(defonce sustain-on (atom false))
 (defonce notes-in-progress (atom {}))
+
+(defn kill-note [note]
+  (let [node (@notes-in-progress note)]
+    (when (node-live? node)
+      (ctl node :gate 0))))
+
+(defn kill-all-notes []
+  (doseq [[note _] @notes-in-progress]
+    (kill-note note)))
+
+(def keytar-sustain-on
+  (on-event [:midi :control-change]
+            (fn [{:keys [note data2]}]
+              (case note
+                64 (let [sustain? (>= data2 64)]
+                     (reset! sustain-on sustain?)
+                     (when-not sustain? (kill-all-notes)))))
+            ::sustain-change))
 
 (def keytar-note-on
   (on-event [:midi :note-on]
             (fn [{note :note velocity :velocity}]
               (let [unit-volume (+ 0.6 (* 0.3 (/ velocity 128)))
                     synth (some-> note midi->freq (/ 2) (keytar-instrument :dur 15 :vol (/ velocity 128)))]
+                (kill-note note)
                 (swap! notes-in-progress assoc note synth)))
             ::midi-note-on))
 
 (def keytar-note-off
   (on-event [:midi :note-off]
            (fn [{note :note}]
-             (ctl (@notes-in-progress note) :gate 0))
+             (if (not @sustain-on) (kill-note note)))
            ::midi-note-off))
 
 (def kit {:kick #(drums/kick2 66)
