@@ -498,11 +498,12 @@
          64,, 68,, 72,, 76,, 80,, 84,, 88,,,96,,104,,108,,112,,120]
       midi)))
 
-
-
-
-
-
+(comment
+  (corgan 80)     (corgan 120)
+  (corgan 100)    (corgan 150)
+  (corgan 120)    (corgan 180)
+  (corgan 140)    (corgan 240)
+)
 
 (defn midi->linear-freq [midi]
   (let [c0-midi 12
